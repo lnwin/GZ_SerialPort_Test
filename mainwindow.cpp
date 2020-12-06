@@ -6,6 +6,9 @@
 #include "QValueAxis"
 #include "QList"
 #include "QDebug"
+#include <QDateTimeAxis>
+#include"QDateTime"
+#include <QFileDialog>
 QT_CHARTS_USE_NAMESPACE
 QChart *chart_1;
 QChart *chart_2;
@@ -18,6 +21,7 @@ QLineSeries *series_3;
 QLineSeries *series_4;
 QLineSeries *series_5;
 int maxSize = 5000;
+int MessageHead=0;
 QList<float> currentdata;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -25,15 +29,13 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    serial =  new QSerialPort;
     chart1();
     chart2();
     chart3();
     chart4();
     chart5();
-    //        QPalette pal = qApp->palette();
-    //        pal.setColor(QPalette::Window, QRgb(0x121218));
-    //        pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
-    //        qApp->setPalette(pal);
+    searchport();
 
 }
 
@@ -47,37 +49,35 @@ void MainWindow::chart1()
    chart_1 =new QChart;
 
    QChartView *chartView = new QChartView(chart_1);
-//    v.setRubberBand(QChartView::HorizontalRubberBand);
    chartView->setRubberBand(QChartView::RectangleRubberBand);
-//    chartView->setRubberBand();
 
    series_1 = new QLineSeries;
    chart_1->addSeries(series_1);
-
-
-   series_1->append(0,0);
-   series_1->append(1,4);
-   series_1->append(2,7);
-
    series_1->setUseOpenGL(true);//openGl 加速
    qDebug()<<series_1->useOpenGL();
 
-   QValueAxis *axisX = new QValueAxis;
-   axisX->setRange(0,series_1->count()-1);
-   axisX->setLabelFormat("%g");
-   axisX->setTitleText("Count");
+   QDateTime now  = QDateTime::currentDateTime();
+
+
+   QDateTimeAxis  *axisX = new QDateTimeAxis;
+   axisX->setFormat("HH:mm:ss");//
+   axisX->setLabelsAngle(60);
+   axisX->setRange(now.addMSecs(-100*maxSize),now);
 
    QValueAxis *axisY = new QValueAxis;
    axisY->setRange(-10,10);
    axisY->setTitleText("axisY");
 
-   chart_1->setAxisX(axisX,series_1);
-   chart_1->setAxisY(axisY,series_1);
+
    chart_1->legend()->hide();
    chart_1->setTitle("magnetic_1");
-
+   chart_1->addAxis(axisY, Qt::AlignLeft);
+   chart_1->addAxis(axisX, Qt::AlignBottom);
    QVBoxLayout *layout = ui->verticalLayout;
    layout->addWidget(chartView);
+
+   series_1->attachAxis(axisY);// 此二句一定要放在 this->chart()->addAxis 语句之后，不然
+   series_1->attachAxis(axisX);// 没有曲线显示
 
 }
 void MainWindow::chart2()
@@ -226,40 +226,103 @@ void MainWindow::chart5()
 void MainWindow::updataSeries(QList<float> data)
 {
 
-    if (series_1->count() >10)
+    QDateTime x1=QDateTime::currentDateTime();
+    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+    qreal y =qrand()%9;//随机生成0到9的随机数
+    chart_1->axisX()->setMin(QDateTime::currentDateTime().addSecs(-60*1));
+    chart_1->axisX()->setMax(QDateTime::currentDateTime().addSecs(0));
+    qDebug()<<x1.currentMSecsSinceEpoch();
+    series_1->append(x1.toMSecsSinceEpoch(), y);
+    series_1->show();
+
+
+}
+void MainWindow::searchport()
+{
+    foreach (const QSerialPortInfo &info,QSerialPortInfo::availablePorts())
+    {
+        QSerialPort serial;
+        serial.setPort(info);
+        if(serial.open(QIODevice::ReadWrite))
         {
-            series_1->removePoints(0, 1);
-            series_1->append(series_1->count()-1,data[0]);
+            ui->portcomboBox->addItem(serial.portName());
+            serial.close();
 
         }
-    series_1->append(series_1->count()-1,data[0]);
-    QValueAxis *axisX = new QValueAxis;
-    axisX->setRange(0,series_1->count()-2);
-    axisX->setLabelFormat("%g");
-    axisX->setTitleText("Count");
-    QValueAxis *axisY = new QValueAxis;
-    axisY->setRange(-10,10);
-    axisY->setTitleText("axisY");
+    }
+}
+void MainWindow::ReadData()//------------------------------------------------------------串口读取函数
+{
+    QByteArray buf;
+    buf = serial->readAll();
 
-    chart_1->setAxisX(axisX,series_1);
-    chart_1->setAxisY(axisY,series_1);
-    chart_1->legend()->hide();
-    chart_1->setTitle("magnetic_1");
-    qDebug()<<series_1->at(0);
+
+    if(!buf.isEmpty())
+    {
+
+        QString str = ui->textEdit->toPlainText();
+        str+=tr(buf);
+        ui->textEdit->clear();
+        ui->textEdit->append(str);
+        analyzingData(buf);
+    }
+    buf.clear();
+}
+void MainWindow::analyzingData( QByteArray buf)
+{
+   int buflength =buf.length();
+   qDebug()<<buflength;
+   for (int i=0;i<buflength-1;buflength++)
+   {
+      if((buf[MessageHead]=='\x88')&(buf[MessageHead+5]=='\x00') )
+      {
+          break;
+      }
+      MessageHead++;
+   }
+
+
 
 
 
 
 }
-
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
 
+        if(!serial->isOpen())
+        {
+        serial->setPortName(ui->portcomboBox->currentText());//设置串口名
+        serial->open(QIODevice::ReadWrite);//以读写方式打开串口
+        serial->setBaudRate(QSerialPort::Baud115200);//波特率
+        serial->setDataBits(QSerialPort::Data8);//数据位
+        serial->setParity(QSerialPort::NoParity);//校验位
+        serial->setStopBits(QSerialPort::OneStop);//停止位
+        QObject::connect(serial,&QSerialPort::readyRead,this,&MainWindow::ReadData);
+        ui->textEdit->append("SerialPort Opened");
+        ui->SerialButton->setText("Close Port");
+
+        }
+        else
+        {
+           serial->close();
+           ui->SerialButton->setText("Open Port");
+           ui->textEdit->append("SerialPort Closed");
+        }
 }
 
 void MainWindow::on_SelectFileButton_clicked()//选取文件
 {
+    QString  srcDirPath = QFileDialog::getOpenFileName( this, "open the data file", "/");
+    if (srcDirPath.isEmpty())
+    {
+        return;
+    }
+    else
+    {
+        ui->lineEdit->setText(srcDirPath) ;
 
+    }
 }
 
 void MainWindow::on_FileReadButton_clicked()//读取文件数据

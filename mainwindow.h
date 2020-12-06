@@ -33,5 +33,10 @@ private:
     void chart4();
     void chart5();
     void updataSeries(QList<float> data);
+    void searchport();
+    void ReadData();
+    void analyzingData( QByteArray buf);
+
+
 };
 #endif // MAINWINDOW_H
