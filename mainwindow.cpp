@@ -23,7 +23,10 @@ QLineSeries *series_5;
 int maxSize = 5000;
 int MessageHead=0;
 QList<float> currentdata;
-
+qreal DataStartTime;
+bool DataStart =false;
+int DataCount=0;
+int DataStartIndex=0;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -234,7 +237,8 @@ void MainWindow::updataSeries(QList<float> data)
     qDebug()<<x1.currentMSecsSinceEpoch();
     series_1->append(x1.toMSecsSinceEpoch(), y);
     series_1->show();
-
+    int a = '\xff'-'\x18'+1;
+    qDebug()<<a;
 
 }
 void MainWindow::searchport()
@@ -255,33 +259,69 @@ void MainWindow::ReadData()//---------------------------------------------------
 {
     QByteArray buf;
     buf = serial->readAll();
-
-
     if(!buf.isEmpty())
     {
+       ui->textEdit->append(buf.toHex());
+       if(!DataStart)
+       {
+           for (int i=0;i<buf.length()-1;i++)
+        {
+           if((buf[i]=='\x88')&(buf[i+5]=='\x00'))
+           {
+               DataStart=true;
+               DataStartIndex=i;
+               analyzingData(buf);
+               qDebug()<<"Datastart:"<<DataStartIndex;
 
-        QString str = ui->textEdit->toPlainText();
-        str+=tr(buf);
-        ui->textEdit->clear();
-        ui->textEdit->append(str);
-        analyzingData(buf);
+
+           }
+        }
+       }
+       else
+       {
+          analyzingData(buf);
+       }
+
+
     }
     buf.clear();
 }
+QByteArray AllData;
 void MainWindow::analyzingData( QByteArray buf)
 {
-   int buflength =buf.length();
-   qDebug()<<buflength;
-   for (int i=0;i<buflength-1;buflength++)
-   {
-      if((buf[MessageHead]=='\x88')&(buf[MessageHead+5]=='\x00') )
-      {
-          break;
-      }
-      MessageHead++;
-   }
+
+    if(DataCount==0)
+  {
+
+    AllData.append(buf.remove(0,DataStartIndex));
+    DataCount+=buf.length()-DataStartIndex+1;
 
 
+  }
+    else
+    {
+      AllData.append(buf);
+      qDebug()<<"current lenght:"<<AllData.length();
+      DataCount+=buf.length();
+
+    }
+
+    if(DataCount>=2808)
+    {
+
+         AllData=AllData.remove(2808,AllData.length()-2808);
+         DataShow(AllData);
+         qDebug()<<"final count:"<<AllData.length();
+         qDebug()<<"final start:"<<QString::number(AllData[0],16) ;
+         qDebug()<<"final end:"<<QString::number(AllData[AllData.length()-1],16);
+         AllData.clear();
+         DataStart=false;
+         DataCount=0;
+    }
+
+}
+void MainWindow::DataShow( QByteArray buf)
+{
 
 
 

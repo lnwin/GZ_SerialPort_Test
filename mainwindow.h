@@ -36,6 +36,7 @@ private:
     void searchport();
     void ReadData();
     void analyzingData( QByteArray buf);
+    void DataShow(QByteArray buf);
 
 
 };
