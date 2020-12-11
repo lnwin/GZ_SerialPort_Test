@@ -259,6 +259,11 @@ void MainWindow::ReadData()//---------------------------------------------------
 {
     QByteArray buf;
     buf = serial->readAll();
+//====================================
+    QByteArray ak =buf.mid(6,3) ;
+    bool ok;
+    qDebug()<<ak.toHex().toInt(&ok,16);
+//====================================
     if(!buf.isEmpty())
     {
        ui->textEdit->append(buf.toHex());
@@ -323,10 +328,24 @@ void MainWindow::analyzingData( QByteArray buf)
 void MainWindow::DataShow( QByteArray buf)
 {
 
+    uchar* alldata = (uchar*)buf.data();//转为数字
+
+
 
 
 
 }
+
+int MainWindow:: ChangeDate2Number(int year,int month,int day,int hour,int minute,int second,int MM)
+{
+    int finaldate=0;
+
+
+
+
+    return finaldate;
+}
+
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
 
