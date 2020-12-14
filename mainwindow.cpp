@@ -255,16 +255,12 @@ void MainWindow::searchport()
         }
     }
 }
-void MainWindow::ReadData()//------------------------------------------------------------串口读取函数
+void MainWindow::ReadData()
 {
     QByteArray buf;
     buf = serial->readAll();
-//====================================
-    QByteArray ak =buf.mid(6,3) ;
-    bool ok;
-    qDebug()<<ak.toHex().toInt(&ok,16);
-//====================================
-    if(!buf.isEmpty())
+
+       if(!buf.isEmpty())
     {
        ui->textEdit->append(buf.toHex());
        if(!DataStart)
@@ -277,8 +273,6 @@ void MainWindow::ReadData()//---------------------------------------------------
                DataStartIndex=i;
                analyzingData(buf);
                qDebug()<<"Datastart:"<<DataStartIndex;
-
-
            }
         }
        }
@@ -291,6 +285,20 @@ void MainWindow::ReadData()//---------------------------------------------------
     }
     buf.clear();
 }
+QString MainWindow::fixstring(int a)
+ {
+     if(a<10)
+     {
+         QString s  = "0"+QString::number(a);
+         return s;
+     }
+     else
+     {
+          QString s  = QString::number(a);
+          return s;
+     }
+
+ };
 QByteArray AllData;
 void MainWindow::analyzingData( QByteArray buf)
 {
@@ -300,7 +308,7 @@ void MainWindow::analyzingData( QByteArray buf)
 
     AllData.append(buf.remove(0,DataStartIndex));
     DataCount+=buf.length()-DataStartIndex+1;
-
+    DataStartTime = ChangeDate2Number(AllData);
 
   }
     else
@@ -329,23 +337,37 @@ void MainWindow::DataShow( QByteArray buf)
 {
 
     uchar* alldata = (uchar*)buf.data();//转为数字
-
+    int ssa = alldata[0];
 
 
 
 
 }
-
-int MainWindow:: ChangeDate2Number(int year,int month,int day,int hour,int minute,int second,int MM)
+qint64 MainWindow:: ChangeDate2Number(QByteArray buf)
 {
-    int finaldate=0;
-
-
-
-
+    bool ok;
+    QList<int>datetime;
+    datetime.append(buf.mid(6,1).toHex().toInt(&ok,16));
+    datetime.append(buf.mid(7,1).toHex().toInt(&ok,16));
+    datetime.append(buf.mid(8,1).toHex().toInt(&ok,16));
+    datetime.append(buf.mid(9,1).toHex().toInt(&ok,16));
+    datetime.append(buf.mid(10,1).toHex().toInt(&ok,16));
+    datetime.append(buf.mid(11,1).toHex().toInt(&ok,16));
+    datetime.append(buf.mid(12,1).toHex().toInt(&ok,16)+2000);
+    QString s  = fixstring(datetime[1]);
+    QString mm = fixstring(datetime[2]);
+    QString hh = fixstring(datetime[3]);
+    QString dd = fixstring(datetime[4]);
+    QString MM = fixstring(datetime[5]);
+    QString YY = fixstring(datetime[6]);
+    QString YYMMddhhmmss =YY+"-"+MM+"-"+dd+" "+hh+":"+mm+":"+s;
+    QDateTime time;
+    time = QDateTime::fromString(YYMMddhhmmss,"yyyy-MM-dd hh:mm:ss");
+    qint64 finaldate = time.toMSecsSinceEpoch()+datetime[0];
+    qDebug()<<finaldate;
     return finaldate;
+    datetime.clear();
 }
-
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
 
