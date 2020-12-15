@@ -35,11 +35,11 @@ private:
     void updataSeries(QList<float> data);
     void searchport();
     void ReadData();
-    void analyzingData( QByteArray buf);
+    void AnalyzingData( QByteArray buf);
     void DataShow(QByteArray buf);
     qint64 ChangeDate2Number(QByteArray buf);
-    QString fixstring(int);
-    qint64 Hex3Dec(QString hex);
+    QString FixString(int);
+    float Hex3Dec(QString hex);
 
 };
 #endif // MAINWINDOW_H
