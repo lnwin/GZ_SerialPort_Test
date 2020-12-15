@@ -39,7 +39,7 @@ private:
     void DataShow(QByteArray buf);
     qint64 ChangeDate2Number(QByteArray buf);
     QString fixstring(int);
-
+    qint64 Hex3Dec(QString hex);
 
 };
 #endif // MAINWINDOW_H

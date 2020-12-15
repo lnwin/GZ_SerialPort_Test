@@ -364,9 +364,47 @@ qint64 MainWindow:: ChangeDate2Number(QByteArray buf)
     QDateTime time;
     time = QDateTime::fromString(YYMMddhhmmss,"yyyy-MM-dd hh:mm:ss");
     qint64 finaldate = time.toMSecsSinceEpoch()+datetime[0];
-    qDebug()<<finaldate;
+   // qDebug()<<finaldate;
     return finaldate;
     datetime.clear();
+}
+qint64 MainWindow:: Hex3Dec(QString hex)
+{
+      bool ok;
+      int finaldata;
+      int a =hex.toInt(&ok,16);
+      QString bin =QString::number(a,2);
+      int datalength =bin.length();
+      if(datalength%4==0)
+      {
+             for (int i=0;i<datalength;i++)
+             {
+                 if(bin[i]=="0")
+                 {
+                     bin[i]='1';
+                 }
+                 else
+                 {
+                     bin[i]='0';
+                 }
+
+             }
+
+             finaldata = -(bin.toInt(&ok,2)+1);
+             return finaldata;
+         }
+
+         else
+         {
+             QString data =hex;
+             finaldata =data.toInt(&ok,16);
+             return finaldata;
+
+         }
+
+
+
+
 }
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
@@ -408,8 +446,13 @@ void MainWindow::on_SelectFileButton_clicked()//选取文件
 
 void MainWindow::on_FileReadButton_clicked()//读取文件数据
 {
-     currentdata.append(7);
-     updataSeries(currentdata);
-     currentdata.clear();
+     //currentdata.append(7);
+     //updataSeries(currentdata);
+     //currentdata.clear();
+    QString test1 ="ff32c4";
+    QString test2 ="4dbf25";
+    qDebug()<<Hex3Dec(test1);
+    qDebug()<<Hex3Dec(test2);
+
 
 }
