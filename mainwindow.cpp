@@ -23,7 +23,7 @@ QLineSeries *series_5;
 int maxSize = 5000;
 int MessageHead=0;
 QList<float> currentdata;
-qreal DataStartTime;
+qint64 DataStartTime;
 bool DataStart =false;
 int DataCount=0;
 int DataStartIndex=0;
@@ -63,7 +63,7 @@ void MainWindow::chart1()
 
 
    QDateTimeAxis  *axisX = new QDateTimeAxis;
-   axisX->setFormat("HH:mm:ss");//
+   axisX->setFormat("yyyyMMdd HH:mm:ss");//
    axisX->setLabelsAngle(60);
    axisX->setRange(now.addMSecs(-100*maxSize),now);
 
@@ -229,16 +229,16 @@ void MainWindow::chart5()
 void MainWindow::updataSeries(QList<float> data)
 {
 
-    QDateTime x1=QDateTime::currentDateTime();
-    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
+   // QDateTime x1=QDateTime::currentDateTime();
+   // qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
     qreal y =qrand()%9;//随机生成0到9的随机数
-    chart_1->axisX()->setMin(QDateTime::currentDateTime().addSecs(-60*1));
-    chart_1->axisX()->setMax(QDateTime::currentDateTime().addSecs(0));
-    qDebug()<<x1.currentMSecsSinceEpoch();
-    series_1->append(x1.toMSecsSinceEpoch(), y);
-    series_1->show();
-    int a = '\xff'-'\x18'+1;
-    qDebug()<<a;
+    chart_1->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-60));
+    chart_1->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
+    qDebug()<<QDateTime::fromMSecsSinceEpoch(DataStartTime);
+    qDebug()<<DataStartTime;
+    series_1->append(DataStartTime, y);
+    series_1->show();    
+    qDebug()<<y;
 
 }
 void MainWindow::searchport()
@@ -273,6 +273,7 @@ void MainWindow::ReadData()
                DataStartIndex=i;
                analyzingData(buf);
                qDebug()<<"Datastart:"<<DataStartIndex;
+               break;
            }
         }
        }
@@ -285,20 +286,7 @@ void MainWindow::ReadData()
     }
     buf.clear();
 }
-QString MainWindow::fixstring(int a)
- {
-     if(a<10)
-     {
-         QString s  = "0"+QString::number(a);
-         return s;
-     }
-     else
-     {
-          QString s  = QString::number(a);
-          return s;
-     }
 
- };
 QByteArray AllData;
 void MainWindow::analyzingData( QByteArray buf)
 {
@@ -309,20 +297,20 @@ void MainWindow::analyzingData( QByteArray buf)
     AllData.append(buf.remove(0,DataStartIndex));
     DataCount+=buf.length()-DataStartIndex+1;
     DataStartTime = ChangeDate2Number(AllData);
-
+    qDebug()<<"DataStarTime:"<<DataStartTime;
   }
     else
     {
       AllData.append(buf);
       qDebug()<<"current lenght:"<<AllData.length();
-      DataCount+=buf.length();
+     // DataCount+=buf.length();
 
     }
 
-    if(DataCount>=2808)
+    if(AllData.length()>=5408)
     {
 
-         AllData=AllData.remove(2808,AllData.length()-2808);
+         AllData=AllData.remove(5408,AllData.length()-5408);
          DataShow(AllData);
          qDebug()<<"final count:"<<AllData.length();
          qDebug()<<"final start:"<<QString::number(AllData[0],16) ;
@@ -335,12 +323,61 @@ void MainWindow::analyzingData( QByteArray buf)
 }
 void MainWindow::DataShow( QByteArray buf)
 {
+    bool ok;
+    DataStartTime =ChangeDate2Number(buf);
+    qreal y;
+    for (int count =18;count<5400;count+=13)
+    {
+        switch (buf.mid(count,1).toHex().toInt(&ok,16) )
+        {
 
-    uchar* alldata = (uchar*)buf.data();//转为数字
-    int ssa = alldata[0];
-
-
-
+           case 1:
+                y =  Hex3Dec(buf.mid(count+2,3).toHex());
+                series_1->append(DataStartTime,y);
+                DataStartTime+=30;
+                y =  Hex3Dec(buf.mid(count+5,3).toHex());
+                series_1->append(DataStartTime,y);
+                DataStartTime+=30;
+                series_1->show();
+                break;
+          case 2:
+                y =  Hex3Dec(buf.mid(count+2,3).toHex());
+                series_2->append(DataStartTime,y);
+                DataStartTime+=30;
+                y =  Hex3Dec(buf.mid(count+5,3).toHex());
+                series_2->append(DataStartTime,y);
+                DataStartTime+=30;
+                series_2->show();
+                break;
+          case 3:
+                y =  Hex3Dec(buf.mid(count+2,3).toHex());
+                series_3->append(DataStartTime,y);
+                DataStartTime+=30;
+                y =  Hex3Dec(buf.mid(count+5,3).toHex());
+                series_3->append(DataStartTime,y);
+                DataStartTime+=30;
+                series_3->show();
+                break;
+          case 4:
+                y =  Hex3Dec(buf.mid(count+2,3).toHex());
+                series_4->append(DataStartTime,y);
+                DataStartTime+=30;
+                y =  Hex3Dec(buf.mid(count+5,3).toHex());
+                series_4->append(DataStartTime,y);
+                DataStartTime+=30;
+                series_4->show();
+                break;
+          case 5:
+                y =  Hex3Dec(buf.mid(count+2,3).toHex());
+                series_5->append(DataStartTime,y);
+                DataStartTime+=30;
+                y =  Hex3Dec(buf.mid(count+5,3).toHex());
+                series_5->append(DataStartTime,y);
+                DataStartTime+=30;
+                series_5->show();
+                break;
+        }
+    }
 
 }
 qint64 MainWindow:: ChangeDate2Number(QByteArray buf)
@@ -390,14 +427,14 @@ qint64 MainWindow:: Hex3Dec(QString hex)
 
              }
 
-             finaldata = -(bin.toInt(&ok,2)+1);
+             finaldata = (-(bin.toInt(&ok,2)+1))/8388608*2.2;
              return finaldata;
          }
 
          else
          {
              QString data =hex;
-             finaldata =data.toInt(&ok,16);
+             finaldata =data.toInt(&ok,16)/8388608*2.2;
              return finaldata;
 
          }
@@ -406,6 +443,20 @@ qint64 MainWindow:: Hex3Dec(QString hex)
 
 
 }
+QString MainWindow::fixstring(int a)
+ {
+     if(a<10)
+     {
+         QString s  = "0"+QString::number(a);
+         return s;
+     }
+     else
+     {
+          QString s  = QString::number(a);
+          return s;
+     }
+
+ };
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
 
@@ -446,13 +497,10 @@ void MainWindow::on_SelectFileButton_clicked()//选取文件
 
 void MainWindow::on_FileReadButton_clicked()//读取文件数据
 {
-     //currentdata.append(7);
-     //updataSeries(currentdata);
-     //currentdata.clear();
-    QString test1 ="ff32c4";
-    QString test2 ="4dbf25";
-    qDebug()<<Hex3Dec(test1);
-    qDebug()<<Hex3Dec(test2);
+
+     updataSeries(currentdata);
+     DataStartTime+=30;
+
 
 
 }
