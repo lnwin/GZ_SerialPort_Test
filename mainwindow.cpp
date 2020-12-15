@@ -173,7 +173,7 @@ void MainWindow::chart4()
 
     QValueAxis *axisY = new QValueAxis;
     axisY->setRange(-5,5);
-    axisY->setTitleText("axisY");
+    axisY->setTitleText("V");
 
     chart_4->setAxisX(axisX,series_4);
     chart_4->setAxisY(axisY,series_4);
@@ -208,7 +208,7 @@ void MainWindow::chart5()
 
     QValueAxis *axisY = new QValueAxis;
     axisY->setRange(-5,5);
-    axisY->setTitleText("axisY");
+    axisY->setTitleText("V");
 
     chart_5->setAxisX(axisX,series_5);
     chart_5->setAxisY(axisY,series_5);
@@ -341,6 +341,7 @@ void MainWindow::DataShow( QByteArray buf)
                 chart_1->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
                 DataStartTime+=30;
                 series_1->show();
+                ui->channel_1->setText(QString::number(y));
                 break;
           case 2:
                 y =  Hex3Dec(buf.mid(count+2,3).toHex());
@@ -354,6 +355,7 @@ void MainWindow::DataShow( QByteArray buf)
                 chart_2->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
                 DataStartTime+=30;
                 series_2->show();
+                ui->channel_2->setText(QString::number(y));
                 break;
           case 3:
                 y =  Hex3Dec(buf.mid(count+2,3).toHex());
@@ -367,6 +369,7 @@ void MainWindow::DataShow( QByteArray buf)
                 chart_3->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
                 DataStartTime+=30;
                 series_3->show();
+                 ui->channel_3->setText(QString::number(y));
                 break;
           case 4:
                 y =  Hex3Dec(buf.mid(count+2,3).toHex());
@@ -380,6 +383,7 @@ void MainWindow::DataShow( QByteArray buf)
                 chart_4->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
                 DataStartTime+=30;
                 series_4->show();
+                 ui->channel_4->setText(QString::number(y));
                 break;
           case 5:
                 y =  Hex3Dec(buf.mid(count+2,3).toHex());
@@ -393,6 +397,7 @@ void MainWindow::DataShow( QByteArray buf)
                 chart_5->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
                 DataStartTime+=30;
                 series_5->show();
+                 ui->channel_5->setText(QString::number(y));
                 break;
         }
     }
