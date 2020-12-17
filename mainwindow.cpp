@@ -22,24 +22,25 @@ QLineSeries *series_4;
 QLineSeries *series_5;
 int maxSize = 5000;
 int MessageHead=0;
-QList<float> currentdata;
-qint64 DataStartTime;
 bool DataStart =false;
 int DataCount=0;
 int DataStartIndex=0;
+qint64 DataStartTime;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     serial =  new QSerialPort;
+    Dthread = new DataThread;
     chart1();
     chart2();
     chart3();
     chart4();
     chart5();
     searchport();
-
+    connect(this, SIGNAL(sendData2Thread(QByteArray)),Dthread,SLOT(reveivedDataFromM(QByteArray)));
+    connect(Dthread,SIGNAL(senddata2M(QList<float>)),this,SLOT(updataSeries(QList<float>)));
 }
 
 MainWindow::~MainWindow()
@@ -220,16 +221,20 @@ void MainWindow::chart5()
 void MainWindow::updataSeries(QList<float> data)
 {
 
-   // QDateTime x1=QDateTime::currentDateTime();
-   // qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    qreal y =qrand()%9;//随机生成0到9的随机数
-    chart_1->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-60));
-    chart_1->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
+    qint64 timestart = data[0];
+    int Dlength = data.length();
+    for (int i = 1; i<Dlength; i++ )
+
+    {
+        series_1->append(timestart, data[i]);
+        timestart+=30;
+    }
+
+    chart_1->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(timestart).addMSecs(-6000));
+    chart_1->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(timestart).addMSecs(0));
+    series_1->show();
     qDebug()<<QDateTime::fromMSecsSinceEpoch(DataStartTime);
     qDebug()<<DataStartTime;
-    series_1->append(DataStartTime, y);
-    series_1->show();    
-    qDebug()<<y;
 
 }
 void MainWindow::searchport()
@@ -253,7 +258,7 @@ void MainWindow::ReadData()
 
        if(!buf.isEmpty())
     {
-       ui->textEdit->append(buf.toHex());
+      // ui->textEdit->append(buf.toHex());
        if(!DataStart)
        {
            for (int i=0;i<buf.length()-1;i++)
@@ -277,7 +282,6 @@ void MainWindow::ReadData()
     }
     buf.clear();
 }
-
 QByteArray AllData;
 
 void MainWindow::AnalyzingData( QByteArray buf)
@@ -288,8 +292,8 @@ void MainWindow::AnalyzingData( QByteArray buf)
 
     AllData.append(buf.remove(0,DataStartIndex));
     DataCount+=buf.length()-DataStartIndex+1;
-    DataStartTime = ChangeDate2Number(AllData);
-    qDebug()<<"DataStarTime:"<<DataStartTime;
+    //DataStartTime = ChangeDate2Number(AllData);
+   // qDebug()<<"DataStarTime:"<<DataStartTime;
   }
     else
     {
@@ -303,7 +307,9 @@ void MainWindow::AnalyzingData( QByteArray buf)
     {
 
          AllData=AllData.remove(5408,AllData.length()-5408);
-         DataShow(AllData);
+        //DataShow(AllData,DataStartTime);
+         sendData2Thread(AllData);
+         Dthread->run();
          qDebug()<<"final count:"<<AllData.length();
          qDebug()<<"final start:"<<QString::number(AllData[0],16) ;
          qDebug()<<"final end:"<<QString::number(AllData[AllData.length()-1],16);
@@ -313,176 +319,6 @@ void MainWindow::AnalyzingData( QByteArray buf)
     }
 
 }
-
-void MainWindow::DataShow( QByteArray buf)
-{
-    bool ok;
-    DataStartTime =ChangeDate2Number(buf);
-    qreal y;
-    for (int count =18;count<5400;count+=13)
-    {
-        switch (buf.mid(count,1).toHex().toInt(&ok,16) )
-        {
-
-           case 1:
-                y =  Hex3Dec(buf.mid(count+2,3).toHex());
-//                qDebug()<<buf.mid(count+2,3).toHex();
-//                qDebug()<<DataStartTime;
-//                qDebug()<<y;
-                series_1->append(DataStartTime,y);
-                chart_1->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_1->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                y =  Hex3Dec(buf.mid(count+5,3).toHex());
-//                qDebug()<<DataStartTime;
-//                qDebug()<<y;
-                series_1->append(DataStartTime,y);
-                chart_1->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_1->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                series_1->show();
-                ui->channel_1->setText(QString::number(y));
-                break;
-          case 2:
-                y =  Hex3Dec(buf.mid(count+2,3).toHex());
-                series_2->append(DataStartTime,y);
-                chart_2->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_2->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                y =  Hex3Dec(buf.mid(count+5,3).toHex());
-                series_2->append(DataStartTime,y);
-                chart_2->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_2->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                series_2->show();
-                ui->channel_2->setText(QString::number(y));
-                break;
-          case 3:
-                y =  Hex3Dec(buf.mid(count+2,3).toHex());
-                series_3->append(DataStartTime,y);
-                chart_3->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_3->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                y =  Hex3Dec(buf.mid(count+5,3).toHex());
-                series_3->append(DataStartTime,y);
-                chart_3->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_3->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                series_3->show();
-                 ui->channel_3->setText(QString::number(y));
-                break;
-          case 4:
-                y =  Hex3Dec(buf.mid(count+2,3).toHex());
-                series_4->append(DataStartTime,y);
-                chart_4->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_4->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                y =  Hex3Dec(buf.mid(count+5,3).toHex());
-                series_4->append(DataStartTime,y);
-                chart_4->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_4->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                series_4->show();
-                 ui->channel_4->setText(QString::number(y));
-                break;
-          case 5:
-                y =  Hex3Dec(buf.mid(count+2,3).toHex());
-                series_5->append(DataStartTime,y);
-                chart_5->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_5->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                y =  Hex3Dec(buf.mid(count+5,3).toHex());
-                series_5->append(DataStartTime,y);
-                chart_5->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(-6000));
-                chart_5->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(DataStartTime).addMSecs(0));
-                DataStartTime+=30;
-                series_5->show();
-                 ui->channel_5->setText(QString::number(y));
-                break;
-        }
-    }
-
-}
-
-qint64 MainWindow:: ChangeDate2Number(QByteArray buf)
-{
-    bool ok;
-    QList<int>datetime;
-    datetime.append(buf.mid(6,1).toHex().toInt(&ok,16));
-    datetime.append(buf.mid(7,1).toHex().toInt(&ok,16));
-    datetime.append(buf.mid(8,1).toHex().toInt(&ok,16));
-    datetime.append(buf.mid(9,1).toHex().toInt(&ok,16));
-    datetime.append(buf.mid(10,1).toHex().toInt(&ok,16));
-    datetime.append(buf.mid(11,1).toHex().toInt(&ok,16));
-    datetime.append(buf.mid(12,1).toHex().toInt(&ok,16)+2000);
-    QString s  = FixString(datetime[1]);
-    QString mm = FixString(datetime[2]);
-    QString hh = FixString(datetime[3]);
-    QString dd = FixString(datetime[4]);
-    QString MM = FixString(datetime[5]);
-    QString YY = FixString(datetime[6]);
-    QString YYMMddhhmmss =YY+"-"+MM+"-"+dd+" "+hh+":"+mm+":"+s;
-    QDateTime time;
-    time = QDateTime::fromString(YYMMddhhmmss,"yyyy-MM-dd hh:mm:ss");
-    qint64 finaldate = time.toMSecsSinceEpoch()+datetime[0];
-   // qDebug()<<finaldate;
-    return finaldate;
-    datetime.clear();
-}
-
-float MainWindow:: Hex3Dec(QString hex)
-{
-      bool ok;
-      float finaldata;
-      int a =hex.toInt(&ok,16);
-      QString bin =QString::number(a,2);
-      int datalength =bin.length();
-      if(datalength%4==0)
-      {
-             for (int i=0;i<datalength;i++)
-             {
-                 if(bin[i]=="0")
-                 {
-                     bin[i]='1';
-                 }
-                 else
-                 {
-                     bin[i]='0';
-                 }
-
-             }
-
-             finaldata = ((double)(-(bin.toInt(&ok,2)+1))/8388608)*2.2;
-             return finaldata;
-         }
-
-         else
-         {
-             QString data =hex;
-             finaldata =((double)data.toInt(&ok,16)/8388608)*2.2;
-             return finaldata;
-
-         }
-
-
-
-
-}
-
-QString MainWindow::FixString(int a)
- {
-     if(a<10)
-     {
-         QString s  = "0"+QString::number(a);
-         return s;
-     }
-     else
-     {
-          QString s  = QString::number(a);
-          return s;
-     }
-
- };
 
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
