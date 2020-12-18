@@ -56,7 +56,7 @@ void MainWindow::formint()
     texpal.setColor(QPalette::Text, Qt::green);
     ui->textEdit->setPalette(texpal);
     QPalette pal = window()->palette();
-    pal.setColor(QPalette::Window, Qt::black);//QRgb(0x121218));
+    pal.setColor(QPalette::Window, Qt::black);
     pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
     window()->setPalette(pal);
 
@@ -320,23 +320,25 @@ void MainWindow::searchport()
         }
     }
 }
+QByteArray Transbuf;
 void MainWindow::ReadData()
 {
     QByteArray buf;
     buf = serial->readAll();
-
+    Transbuf += buf;
        if(!buf.isEmpty())
     {
-      // ui->textEdit->append(buf.toHex());
+     // ui->textEdit->append(buf.toHex());
        if(!DataStart)
        {
-           for (int i=0;i<buf.length()-1;i++)
+           for (int i=0;i<Transbuf.length()-1;i++)
         {
-           if((buf[i]=='\x88')&(buf[i+5]=='\x00'))
+           if((Transbuf[i]=='\x88')&(Transbuf[i+5]=='\x00'))
            {
                DataStart=true;
                DataStartIndex=i;
-               AnalyzingData(buf);
+               AnalyzingData(Transbuf);
+               qDebug()<<"GDSZ："<<Transbuf.length();
                qDebug()<<"Datastart:"<<DataStartIndex;
                break;
            }
@@ -344,43 +346,41 @@ void MainWindow::ReadData()
        }
        else
        {
-          AnalyzingData(buf);
+           qDebug()<<"GDSZ："<<Transbuf.length();
+           AnalyzingData(Transbuf);
        }
 
 
     }
+
     buf.clear();
 }
 QByteArray AllData;
-
 void MainWindow::AnalyzingData( QByteArray buf)
 {
 
     if(DataCount==0)
   {
-
-    AllData.append(buf.remove(0,DataStartIndex));
+    AllData.append(buf.remove(DataStartIndex,DataStartIndex));
     DataCount+=buf.length()-DataStartIndex+1;
     //DataStartTime = ChangeDate2Number(AllData);
-   // qDebug()<<"DataStarTime:"<<DataStartTime;
+    //qDebug()<<"DataStarTime:"<<DataStartTime;
   }
     else
     {
-      AllData.append(buf);
+      AllData=buf;
       qDebug()<<"current lenght:"<<AllData.length();
      // DataCount+=buf.length();
-
     }
 
     if(AllData.length()>=5408)
     {
-
+         Transbuf = Transbuf.remove(0,5408);
          AllData=AllData.remove(5408,AllData.length()-5408);
-        //DataShow(AllData,DataStartTime);
          sendData2Thread(AllData);
          Dthread->run();
          qDebug()<<"final count:"<<AllData.length();
-         qDebug()<<"final start:"<<QString::number(AllData[0],16) ;
+         qDebug()<<"final start:"<<QString::number(AllData[0],16);
          qDebug()<<"final end:"<<QString::number(AllData[AllData.length()-1],16);
          AllData.clear();
          DataStart=false;
