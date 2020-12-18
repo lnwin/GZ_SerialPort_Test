@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="picture.qrc">
+    <normaloff>:/new/prefix1/picture/Logo.png</normaloff>:/new/prefix1/picture/Logo.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout" rowstretch="1,1,1" columnstretch="1,1,2">
     <item row="2" column="2">
@@ -24,6 +28,9 @@
           <width>150</width>
           <height>200</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <property name="title">
          <string>Data</string>
@@ -80,7 +87,7 @@
           <rect>
            <x>60</x>
            <y>20</y>
-           <width>91</width>
+           <width>81</width>
            <height>151</height>
           </rect>
          </property>
@@ -126,8 +133,20 @@
       </item>
       <item row="1" column="1">
        <widget class="QGroupBox" name="tool">
+        <property name="styleSheet">
+         <string notr="true">QGroupBox
+     {
+            border-color: rgb(7, 7, 7);
+            border-width: 1px;
+            border-style: solid;
+            margin-top: 0.5ex;
+        }</string>
+        </property>
         <property name="title">
          <string>SerialPort</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
         <widget class="QComboBox" name="portcomboBox">
          <property name="geometry">
@@ -203,6 +222,9 @@
            <height>101</height>
           </rect>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
         </widget>
        </widget>
       </item>
@@ -226,6 +248,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="picture.qrc"/>
+ </resources>
  <connections/>
 </ui>

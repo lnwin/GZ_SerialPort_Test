@@ -14,11 +14,13 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
 {
     bool ok;
    // DataStartTime = ChangeDate2Number(buf);
+
     qreal y;
     currentdata.append(DataStartTime);
-    for (int count =18;count<5400;count+=13)
+    for (int count =18;count<5408;count+=13)
     {
-        switch (buf.mid(count,1).toHex().toInt(&ok,16) )
+
+        switch (buf.mid(count,1).toHex().toInt(&ok,16))
         {
 
         case 1:
@@ -27,51 +29,59 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
              currentdata.append(y);
              DataStartTime+=30;
              y =  Hex3Dec(buf.mid(count+5,3).toHex());
-             DataStartTime+=30;
              currentdata.append(y);
-             if(currentdata.length()==167)
-             {
-                senddata2M(currentdata);
-                currentdata.clear();
-                qDebug()<< "SEND OVER!";
-             }
+             DataStartTime+=30;
+
              break;
 
         case 2:
 
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            currentdata.append(y);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
+            currentdata.append(y);
             DataStartTime+=30;
+//
             break;
 
         case 3:
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            currentdata.append(y);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
-            DataStartTime+=30;
+            currentdata.append(y);
+            DataStartTime+=30;//
             break;
 
         case 4:
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            currentdata.append(y);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
+            currentdata.append(y);
             DataStartTime+=30;
             break;
 
         case 5:
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            currentdata.append(y);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
+            currentdata.append(y);
             DataStartTime+=30;
+            if(currentdata.length()>829)
+            {
+               qDebug()<<"changdu:"<<currentdata.length();
+               senddata2M(currentdata);
+               currentdata.clear();
+            }
             break;
 
         }
     }
 
 }
-
-
 
 float DataThread:: Hex3Dec(QString hex)
 {
@@ -115,6 +125,7 @@ void DataThread::reveivedDataFromM(QByteArray buf)
 {
     Threadbuf =buf;
     ThreadDst =ChangeDate2Number(buf);
+    qDebug()<<"received:"<<buf.length();
     qDebug()<<"received:"<<ThreadDst;
 
 };

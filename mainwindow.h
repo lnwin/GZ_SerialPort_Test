@@ -34,7 +34,7 @@ private:
     void chart3();
     void chart4();
     void chart5();
-
+    void formint();
     void searchport();
     void ReadData();
     void AnalyzingData( QByteArray buf);

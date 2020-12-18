@@ -39,23 +39,38 @@ MainWindow::MainWindow(QWidget *parent)
     chart4();
     chart5();
     searchport();
+    formint();
     connect(this, SIGNAL(sendData2Thread(QByteArray)),Dthread,SLOT(reveivedDataFromM(QByteArray)));
     connect(Dthread,SIGNAL(senddata2M(QList<float>)),this,SLOT(updataSeries(QList<float>)));
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+void MainWindow::formint()
+{
+    QPalette texpal = ui->textEdit->palette();
+    texpal.setBrush(QPalette::Base, Qt::black);
+    texpal.setColor(QPalette::Text, Qt::green);
+    ui->textEdit->setPalette(texpal);
+    QPalette pal = window()->palette();
+    pal.setColor(QPalette::Window, Qt::black);//QRgb(0x121218));
+    pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
+    window()->setPalette(pal);
 
+
+}
 void MainWindow::chart1()
 {
    chart_1 =new QChart;
 
    QChartView *chartView = new QChartView(chart_1);
    chartView->setRubberBand(QChartView::RectangleRubberBand);
-
+   chartView->setRenderHint(QPainter::Antialiasing);
    series_1 = new QLineSeries;
+
    chart_1->addSeries(series_1);
    series_1->setUseOpenGL(true);//openGl 加速
    qDebug()<<series_1->useOpenGL();
@@ -63,7 +78,7 @@ void MainWindow::chart1()
    QDateTime now  = QDateTime::currentDateTime();
    QDateTimeAxis  *axisX = new QDateTimeAxis;
    axisX->setFormat("MM-dd-HH:mm:ss");//
-   axisX->setLabelsAngle(60);
+  // axisX->setLabelsAngle(60);
    axisX->setRange(now.addMSecs(-100*maxSize),now);
 
    QValueAxis *axisY = new QValueAxis;
@@ -77,9 +92,10 @@ void MainWindow::chart1()
    chart_1->addAxis(axisX, Qt::AlignBottom);
    QVBoxLayout *layout = ui->verticalLayout;
    layout->addWidget(chartView);
-
    series_1->attachAxis(axisY);// 此二句一定要放在 this->chart()->addAxis 语句之后，不然
    series_1->attachAxis(axisX);// 没有曲线显示
+   chart_1->setTheme(QChart::ChartThemeDark);
+
 
 }
 void MainWindow::chart2()
@@ -99,7 +115,7 @@ void MainWindow::chart2()
     QDateTime now  = QDateTime::currentDateTime();
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setFormat("MM-dd-HH:mm:ss");//
-    axisX->setLabelsAngle(60);
+   // axisX->setLabelsAngle(60);
     axisX->setRange(now.addMSecs(-100*maxSize),now);
 
     QValueAxis *axisY = new QValueAxis;
@@ -113,7 +129,7 @@ void MainWindow::chart2()
 
     QVBoxLayout *layout = ui->verticalLayout_2;
     layout->addWidget(chartView);
-
+    chart_2->setTheme(QChart::ChartThemeDark);
 }
 void MainWindow::chart3()
 {
@@ -133,7 +149,7 @@ void MainWindow::chart3()
     QDateTime now  = QDateTime::currentDateTime();
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setFormat("MM-dd-HH:mm:ss");//
-    axisX->setLabelsAngle(60);
+   // axisX->setLabelsAngle(60);
     axisX->setRange(now.addMSecs(-100*maxSize),now);
 
     QValueAxis *axisY = new QValueAxis;
@@ -147,6 +163,7 @@ void MainWindow::chart3()
 
     QVBoxLayout *layout = ui->verticalLayout_3;
     layout->addWidget(chartView);
+     chart_3->setTheme(QChart::ChartThemeDark);
 }
 void MainWindow::chart4()
 {
@@ -169,7 +186,7 @@ void MainWindow::chart4()
     QDateTime now  = QDateTime::currentDateTime();
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setFormat("MM-dd-HH:mm:ss");//
-    axisX->setLabelsAngle(60);
+   // axisX->setLabelsAngle(60);
     axisX->setRange(now.addMSecs(-100*maxSize),now);
 
     QValueAxis *axisY = new QValueAxis;
@@ -183,6 +200,7 @@ void MainWindow::chart4()
 
     QVBoxLayout *layout = ui->verticalLayout_4;
     layout->addWidget(chartView);
+     chart_4->setTheme(QChart::ChartThemeDark);
 }
 void MainWindow::chart5()
 {
@@ -204,7 +222,7 @@ void MainWindow::chart5()
     QDateTime now  = QDateTime::currentDateTime();
     QDateTimeAxis *axisX = new QDateTimeAxis;
     axisX->setFormat("MM-dd-HH:mm:ss");//
-    axisX->setLabelsAngle(60);
+    //axisX->setLabelsAngle(60);
     axisX->setRange(now.addMSecs(-100*maxSize),now);
 
     QValueAxis *axisY = new QValueAxis;
@@ -217,22 +235,73 @@ void MainWindow::chart5()
     chart_5->setTitle("electric_2");
     QVBoxLayout *layout = ui->verticalLayout_5;
     layout->addWidget(chartView);
+    chart_5->setTheme(QChart::ChartThemeDark);
 }
 void MainWindow::updataSeries(QList<float> data)
 {
 
     qint64 timestart = data[0];
     int Dlength = data.length();
+    int count=0;
+     qDebug()<<" xianshi jisuan "<<count;
     for (int i = 1; i<Dlength; i++ )
 
     {
+        if(0<i&&i<167)
+        {
         series_1->append(timestart, data[i]);
         timestart+=30;
-    }
+        ui->channel_1->setText(QString::number( data[i]));
+        }
 
-    chart_1->axisX()->setMin(QDateTime::fromMSecsSinceEpoch(timestart).addMSecs(-6000));
-    chart_1->axisX()->setMax(QDateTime::fromMSecsSinceEpoch(timestart).addMSecs(0));
+        else if (167<=i&&i<333)
+        {
+            series_2->append(timestart, data[i]);
+            timestart+=30;
+            ui->channel_2->setText(QString::number( data[i]));
+        }
+        else if (333<=i&&i<499)
+        {
+            series_3->append(timestart, data[i]);
+            timestart+=30;
+            ui->channel_3->setText(QString::number( data[i]));
+        }
+        else if (499<=i&&i<665)
+        {
+            series_4->append(timestart, data[i]);
+            timestart+=30;
+            ui->channel_4->setText(QString::number( data[i]));
+        }
+        else
+        {
+            series_5->append(timestart, data[i]);
+            timestart+=30;
+            ui->channel_5->setText(QString::number( data[i]));
+        }
+
+        count =i;
+    }
+    QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart);
+    chart_1->axisX()->setMin(statT.addMSecs(-25920));
+    chart_1->axisX()->setMax(statT.addMSecs(-19920));
+
+    chart_2->axisX()->setMin(statT.addMSecs(-20940));
+    chart_2->axisX()->setMax(statT.addMSecs(-14940));
+
+    chart_3->axisX()->setMin(statT.addMSecs(-15960));
+    chart_3->axisX()->setMax(statT.addMSecs(-9960));
+
+    chart_4->axisX()->setMin(statT.addMSecs(-10980));
+    chart_4->axisX()->setMax(statT.addMSecs(-4980));
+
+    chart_5->axisX()->setMin(statT.addMSecs(-6000));
+    chart_5->axisX()->setMax(statT);
+
     series_1->show();
+    series_2->show();
+    series_3->show();
+    series_4->show();
+    series_5->show();
     qDebug()<<QDateTime::fromMSecsSinceEpoch(DataStartTime);
     qDebug()<<DataStartTime;
 
