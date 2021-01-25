@@ -21,8 +21,8 @@ public slots:
 
     void reveivedDataFromM(QByteArray buf);
 private:
-    float listMax(QList<float>, int, int);
 
+QList<float>  MaxMin(float a,float b,float c,int N);
 
 };
 

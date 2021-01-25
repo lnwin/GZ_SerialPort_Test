@@ -247,13 +247,13 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
     series_5->clear();
     timestart = time;
     int Dlength = data.length();
-    int count=0;
+    //int count=0;
 
     ui->textEdit->append( "Data Starttime:"+QString::number(timestart));
     for (int i = 0; i<Dlength; i++ )
 
     {
-        if(0<i&&i<167)
+        if(0<i&&i<166)
         {
         series_1->append(timestart, data[i]);
         //series_1->append(i,data[i]);
@@ -262,37 +262,51 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
 
         }
 
-        else if (167<=i&&i<333)
+        else if (166<=i&&i<332)
         {
             series_2->append(timestart, data[i]);
-            timestart+=30;
+            timestart+=30;        
             ui->channel_2->setText(QString::number( data[i]));
         }
-        else if (333<=i&&i<499)
+        else if (332<=i&&i<498)
         {
             series_3->append(timestart, data[i]);
             timestart+=30;
             ui->channel_3->setText(QString::number( data[i]));
         }
-        else if (499<=i&&i<665)
+        else if (498<=i&&i<664)
         {
             series_4->append(timestart, data[i]);
             timestart+=30;
             ui->channel_4->setText(QString::number( data[i]));
         }
-        else
+        else if (664<=i&&i<830)
         {
             series_5->append(timestart, data[i]);
             timestart+=30;
             ui->channel_5->setText(QString::number( data[i]));
         }
+         else
+        {
+            ui->textEdit->append("Max_1:"+ QString::number(data[i]));
+            ui->textEdit->append("Min_1:"+ QString::number(data[i+1]));
+            ui->textEdit->append("Max_2:"+ QString::number(data[i+2]));
+            ui->textEdit->append("Min_2:"+ QString::number(data[i+3]));
+            ui->textEdit->append("Max_3:"+ QString::number(data[i+4]));
+            ui->textEdit->append("Min_3:"+ QString::number(data[i+5]));
+            ui->textEdit->append("Max_4:"+ QString::number(data[i+6]));
+            ui->textEdit->append("Min_4:"+ QString::number(data[i+7]));
+            ui->textEdit->append("Max_5:"+ QString::number(data[i+8]));
+            ui->textEdit->append("Min_5:"+ QString::number(data[i+9]));
+            i+=10;
+        }
 
-        count =i;
+       // count =i;
     }
     ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
     QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart);
-     chart_1->axisX()->setMin(statT.addMSecs(-25920));
-     chart_1->axisX()->setMax(statT.addMSecs(-19920));
+    chart_1->axisX()->setMin(statT.addMSecs(-25920));
+    chart_1->axisX()->setMax(statT.addMSecs(-19920));
 
     chart_2->axisX()->setMin(statT.addMSecs(-20940));
     chart_2->axisX()->setMax(statT.addMSecs(-14940));
@@ -436,14 +450,10 @@ void MainWindow::on_SelectFileButton_clicked()//选取文件
 
     }
 }
-
+int a =0;
+int b=1;
 void MainWindow::on_FileReadButton_clicked()//读取文件数据
 {
-
-    int a = -1419521;
-    float c = ((double)a/8388608)*2;
-
-    qDebug("%.3f",c);
 
 
 }
