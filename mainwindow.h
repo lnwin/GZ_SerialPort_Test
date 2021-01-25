@@ -24,7 +24,7 @@ private slots:
     void on_SelectFileButton_clicked();
 
     void on_FileReadButton_clicked();
-    void updataSeries(QList<float> data);
+    void updataSeries(qint64 time,QList<float> data);
 private:
     Ui::MainWindow *ui;
     QSerialPort *serial;
@@ -40,7 +40,7 @@ private:
     void AnalyzingData( QByteArray buf);
     //void DataShow(QByteArray buf,qint64 datastart);
    // qint64 ChangeDate2Number(QByteArray buf);
-
+ void Delay_MSec(unsigned int );
    // float Hex3Dec(QString hex);
 signals:
 

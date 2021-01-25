@@ -14,9 +14,9 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
 {
     bool ok;
    // DataStartTime = ChangeDate2Number(buf);
-
     qreal y;
-    currentdata.append(DataStartTime);
+    qint64 AK =DataStartTime;
+
     for (int count =18;count<5408;count+=13)
     {
 
@@ -72,8 +72,9 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
             DataStartTime+=30;
             if(currentdata.length()>829)
             {
-               qDebug()<<"changdu:"<<currentdata.length();
-               senddata2M(currentdata);
+               qDebug()<<"SENFDATA2m:"<<DataStartTime ;
+
+               senddata2M(AK,currentdata);
                currentdata.clear();
             }
             break;
@@ -126,20 +127,22 @@ void DataThread::reveivedDataFromM(QByteArray buf)
     Threadbuf =buf;
     ThreadDst =ChangeDate2Number(buf);
     qDebug()<<"received:"<<buf.length();
-    qDebug()<<"received:"<<ThreadDst;
+    qDebug()<<"received time:"<<ThreadDst;
+   run();
 
-};
+}
 qint64 DataThread:: ChangeDate2Number(QByteArray buf)
 {
     bool ok;
     QList<int>datetime;
-    datetime.append(buf.mid(6,1).toHex().toInt(&ok,16));
+    datetime.append(buf.mid(5,2).toHex().toInt(&ok,16));
     datetime.append(buf.mid(7,1).toHex().toInt(&ok,16));
     datetime.append(buf.mid(8,1).toHex().toInt(&ok,16));
     datetime.append(buf.mid(9,1).toHex().toInt(&ok,16));
     datetime.append(buf.mid(10,1).toHex().toInt(&ok,16));
     datetime.append(buf.mid(11,1).toHex().toInt(&ok,16));
     datetime.append(buf.mid(12,1).toHex().toInt(&ok,16)+2000);
+    QString ms = FixString(datetime[0]);
     QString s  = FixString(datetime[1]);
     QString mm = FixString(datetime[2]);
     QString hh = FixString(datetime[3]);
@@ -150,9 +153,10 @@ qint64 DataThread:: ChangeDate2Number(QByteArray buf)
     QDateTime time;
     time = QDateTime::fromString(YYMMddhhmmss,"yyyy-MM-dd hh:mm:ss");
     qint64 finaldate = time.toMSecsSinceEpoch()+datetime[0];
-   // qDebug()<<finaldate;
-    return finaldate;
+
     datetime.clear();
+    return finaldate;
+
 }
 QString DataThread::FixString(int a)
 {
@@ -168,9 +172,25 @@ else
 }
 
 };
+
+ float listMax(QList<float> R2M,int S,int E )
+ {
+     float maxN=R2M[S];
+     for(int i=S;i<E;i++)
+     {
+           if(R2M[i]>maxN)
+           {
+               maxN=R2M[i];
+           }
+
+     }
+return maxN;
+ }
+
 void DataThread::run()
 {
 
     DataShow(Threadbuf,ThreadDst);
     qDebug()<<"count over--------------------";
 }
+

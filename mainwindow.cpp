@@ -41,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     searchport();
     formint();
     connect(this, SIGNAL(sendData2Thread(QByteArray)),Dthread,SLOT(reveivedDataFromM(QByteArray)));
-    connect(Dthread,SIGNAL(senddata2M(QList<float>)),this,SLOT(updataSeries(QList<float>)));
+    connect(Dthread,SIGNAL(senddata2M(qint64,QList<float>)),this,SLOT(updataSeries(qint64,QList<float>)));
 
 }
 
@@ -84,7 +84,6 @@ void MainWindow::chart1()
    QValueAxis *axisY = new QValueAxis;
    axisY->setRange(-5,5);
    axisY->setTitleText("axisY");
-
 
    chart_1->legend()->hide();
    chart_1->setTitle("magnetic_1");
@@ -237,21 +236,30 @@ void MainWindow::chart5()
     layout->addWidget(chartView);
     chart_5->setTheme(QChart::ChartThemeDark);
 }
-void MainWindow::updataSeries(QList<float> data)
-{
 
-    qint64 timestart = data[0];
+void MainWindow::updataSeries(qint64 time,QList<float> data)
+{
+    qint64 timestart;
+    series_1->clear();
+    series_2->clear();
+    series_3->clear();
+    series_4->clear();
+    series_5->clear();
+    timestart = time;
     int Dlength = data.length();
     int count=0;
-     qDebug()<<" xianshi jisuan "<<count;
-    for (int i = 1; i<Dlength; i++ )
+
+    ui->textEdit->append( "Data Starttime:"+QString::number(timestart));
+    for (int i = 0; i<Dlength; i++ )
 
     {
         if(0<i&&i<167)
         {
         series_1->append(timestart, data[i]);
-        timestart+=30;
+        //series_1->append(i,data[i]);
+        timestart+=30;    
         ui->channel_1->setText(QString::number( data[i]));
+
         }
 
         else if (167<=i&&i<333)
@@ -281,9 +289,10 @@ void MainWindow::updataSeries(QList<float> data)
 
         count =i;
     }
+    ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
     QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart);
-    chart_1->axisX()->setMin(statT.addMSecs(-25920));
-    chart_1->axisX()->setMax(statT.addMSecs(-19920));
+     chart_1->axisX()->setMin(statT.addMSecs(-25920));
+     chart_1->axisX()->setMax(statT.addMSecs(-19920));
 
     chart_2->axisX()->setMin(statT.addMSecs(-20940));
     chart_2->axisX()->setMax(statT.addMSecs(-14940));
@@ -302,8 +311,8 @@ void MainWindow::updataSeries(QList<float> data)
     series_3->show();
     series_4->show();
     series_5->show();
-    qDebug()<<QDateTime::fromMSecsSinceEpoch(DataStartTime);
-    qDebug()<<DataStartTime;
+    qDebug()<<"END time "<<timestart;
+
 
 }
 void MainWindow::searchport()
@@ -321,6 +330,7 @@ void MainWindow::searchport()
     }
 }
 QByteArray Transbuf;
+QString firstlenght;
 void MainWindow::ReadData()
 {
     QByteArray buf;
@@ -328,26 +338,37 @@ void MainWindow::ReadData()
     Transbuf += buf;
        if(!buf.isEmpty())
     {
-     // ui->textEdit->append(buf.toHex());
+      // ui->textEdit->append(buf.toHex());
+
        if(!DataStart)
        {
            for (int i=0;i<Transbuf.length()-1;i++)
-        {
-           if((Transbuf[i]=='\x88')&(Transbuf[i+5]=='\x00'))
+
+           if((Transbuf[i]=='\x88')&(Transbuf[i+5]=='\x01')&(Transbuf[i+6]=='\x01'))
            {
                DataStart=true;
                DataStartIndex=i;
-               AnalyzingData(Transbuf);
-               qDebug()<<"GDSZ："<<Transbuf.length();
-               qDebug()<<"Datastart:"<<DataStartIndex;
+//               qDebug()<<"Transbuf1:"<<Transbuf.toHex();
+               Transbuf.remove(0,DataStartIndex-13);
+              // AnalyzingData(Transbuf);
+//               qDebug()<<"FirstLenght"<<Transbuf.length();
+//               qDebug()<<"Datastart:"<<DataStartIndex;
+
+//               qDebug()<<"TransbufMoved:"<<Transbuf.toHex();
                break;
-           }
+
+
+
         }
        }
        else
        {
-           qDebug()<<"GDSZ："<<Transbuf.length();
-           AnalyzingData(Transbuf);
+          // qDebug()<<"AppendLenght:"<<Transbuf.length();
+           if(Transbuf.length()>=5048)
+           {
+              AnalyzingData(Transbuf);
+
+           }
        }
 
 
@@ -356,35 +377,24 @@ void MainWindow::ReadData()
     buf.clear();
 }
 QByteArray AllData;
-void MainWindow::AnalyzingData( QByteArray buf)
+void MainWindow::AnalyzingData(QByteArray buf)
 {
 
-    if(DataCount==0)
-  {
-    AllData.append(buf.remove(DataStartIndex,DataStartIndex));
-    DataCount+=buf.length()-DataStartIndex+1;
-    //DataStartTime = ChangeDate2Number(AllData);
-    //qDebug()<<"DataStarTime:"<<DataStartTime;
-  }
-    else
-    {
       AllData=buf;
-      qDebug()<<"current lenght:"<<AllData.length();
-     // DataCount+=buf.length();
-    }
+      if(AllData.length()>=5408)
+      {
 
-    if(AllData.length()>=5408)
-    {
-         Transbuf = Transbuf.remove(0,5408);
          AllData=AllData.remove(5408,AllData.length()-5408);
          sendData2Thread(AllData);
-         Dthread->run();
-         qDebug()<<"final count:"<<AllData.length();
-         qDebug()<<"final start:"<<QString::number(AllData[0],16);
-         qDebug()<<"final end:"<<QString::number(AllData[AllData.length()-1],16);
+        // Dthread->run();
+//         qDebug()<<"final count:"<<AllData.length();
+//         qDebug()<<"final start:"<<QString::number(AllData[0],16);
+//         qDebug()<<"final end:"<<QString::number(AllData[AllData.length()-1],16);
+//        // qDebug()<<"Transbuf2:"<<Transbuf.toHex();
          AllData.clear();
          DataStart=false;
          DataCount=0;
+         Transbuf.remove(0,5408);
     }
 
 }
@@ -436,4 +446,12 @@ void MainWindow::on_FileReadButton_clicked()//读取文件数据
     qDebug("%.3f",c);
 
 
+}
+void MainWindow::Delay_MSec(unsigned int msec)//-----------------------------------------延时函数
+{
+    QTime _Timer = QTime::currentTime().addMSecs(msec);
+
+    while( QTime::currentTime() < _Timer )
+
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
