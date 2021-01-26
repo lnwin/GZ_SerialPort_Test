@@ -4,8 +4,12 @@
 QList<float> currentdata;
 QByteArray Threadbuf;
 qint64 ThreadDst;
-QList<float> ListMaxMin;
-float Max_1=0,Max_2=0,Max_3=0,Max_4=0,Max_5=0,Min_1=0,Min_2=0,Min_3=0,Min_4=0,Min_5=0;
+float Max_1,Max_2,Max_3,Max_4,Max_5,Min_1,Min_2,Min_3,Min_4,Min_5;
+bool First_1=true;
+bool First_2=true;
+bool First_3=true;
+bool First_4=true;
+bool First_5=true;
 DataThread::DataThread()
 {
 
@@ -27,62 +31,111 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
         case 1:
 
              y =  Hex3Dec(buf.mid(count+2,3).toHex());
+             if(First_1)
+             {
+                 Max_1=y;
+                 Min_1=y;
+                 First_1=false;
+             }
              currentdata.append(y);
-             MaxMin(y,Max_1,Min_1,1);
+             Max_1 = Max(y,Max_1);
+             Min_1 = Min(y,Min_1);
              DataStartTime+=30;
              y =  Hex3Dec(buf.mid(count+5,3).toHex());
              currentdata.append(y);
-             MaxMin(y,Max_1,Min_1,1);
+             Max_1 = Max(y,Max_1);
+             Min_1 = Min(y,Min_1);
              DataStartTime+=30;
              break;
 
         case 2:
 
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            if(First_2)
+            {
+                Max_2=y;
+                Min_2=y;
+                First_2=false;
+            }
             currentdata.append(y);
-            MaxMin(y,Max_2,Min_2,2);
+            Max_2 = Max(y,Max_2);
+            Min_2 = Min(y,Min_2);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
-            MaxMin(y,Max_2,Min_2,2);
+            Max_2 = Max(y,Max_2);
+            Min_2 = Min(y,Min_2);
             DataStartTime+=30;//
             break;
 
         case 3:
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            if(First_3)
+            {
+                Max_3=y;
+                Min_3=y;
+                First_3=false;
+            }
             currentdata.append(y);
-            MaxMin(y,Max_3,Min_3,3);
+            Max_3 = Max(y,Max_3);
+            Min_3 = Min(y,Min_3);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
-            MaxMin(y,Max_3,Min_3,3);
+            Max_3 = Max(y,Max_3);
+            Min_3 = Min(y,Min_3);
             DataStartTime+=30;//
             break;
 
         case 4:
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            if(First_4)
+            {
+                Max_4=y;
+                Min_4=y;
+                First_4=false;
+            }
             currentdata.append(y);
-             MaxMin(y,Max_4,Min_4,4);
+            Max_4 = Max(y,Max_4);
+            Min_4 = Min(y,Min_4);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
-              MaxMin(y,Max_4,Min_4,4);
+            Max_4 = Max(y,Max_4);
+            Min_4 = Min(y,Min_4);
             DataStartTime+=30;
             break;
 
         case 5:
             y =  Hex3Dec(buf.mid(count+2,3).toHex());
+            if(First_5)
+            {
+                Max_5=y;
+                Min_5=y;
+                First_5=false;
+            }
             currentdata.append(y);
-              MaxMin(y,Max_5,Min_5,5);
+            Max_5 = Max(y,Max_5);
+            Min_5 = Min(y,Min_5);
             DataStartTime+=30;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
-            MaxMin(y,Max_5,Min_5,5);
+            Max_5 = Max(y,Max_5);
+            Min_5 = Min(y,Min_5);
             DataStartTime+=30;
             if(currentdata.length()>829)
             {
-               qDebug()<<"SENFDATA2m:"<<DataStartTime ;
-               currentdata.append(ListMaxMin);
+               qDebug()<<"SENFDATA2m:"<<DataStartTime ;             
+               currentdata.append(Max_1);
+                currentdata.append(Min_1);
+                 currentdata.append(Max_2);
+                  currentdata.append(Min_2);
+                   currentdata.append(Max_3);
+                    currentdata.append(Min_3);
+                     currentdata.append(Max_4);
+                      currentdata.append(Min_4);
+                       currentdata.append(Max_5);
+                        currentdata.append(Min_5);
                senddata2M(AK,currentdata);
                currentdata.clear();
             }
@@ -90,6 +143,11 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
 
         }
     }
+//First_1=true;
+//First_2=true;
+//First_3=true;
+//First_4=true;
+//First_5=true;
 
 }
 
@@ -182,20 +240,26 @@ else
 
 };
 
-QList<float> MaxMin(float a,float max, float min,int N)
+float DataThread:: Max(qreal a,float max)
 {
 
     if(a>max)
     {
        max=a;
-       ListMaxMin[N-1]=max;
+
     }
+   return max;
+
+}
+float DataThread:: Min(qreal a,float min)
+{
+
     if(a<min)
     {
        min=a;
-      ListMaxMin[N]=min;
+
     }
-    return ListMaxMin;
+   return min;
 
 }
 void DataThread::run()

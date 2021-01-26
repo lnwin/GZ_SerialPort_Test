@@ -236,20 +236,16 @@ void MainWindow::chart5()
     layout->addWidget(chartView);
     chart_5->setTheme(QChart::ChartThemeDark);
 }
-
+int series_count=0;
 void MainWindow::updataSeries(qint64 time,QList<float> data)
 {
     qint64 timestart;
-    series_1->clear();
-    series_2->clear();
-    series_3->clear();
-    series_4->clear();
-    series_5->clear();
+
     timestart = time;
     int Dlength = data.length();
     //int count=0;
 
-    ui->textEdit->append( "Data Starttime:"+QString::number(timestart));
+  //  ui->textEdit->append( "Data Starttime:"+QString::number(timestart));
     for (int i = 0; i<Dlength; i++ )
 
     {
@@ -280,53 +276,122 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
             timestart+=30;
             ui->channel_4->setText(QString::number( data[i]));
         }
-        else if (664<=i&&i<830)
+        else  if (664<=i&&i<830)
         {
             series_5->append(timestart, data[i]);
             timestart+=30;
             ui->channel_5->setText(QString::number( data[i]));
         }
-         else
-        {
-            ui->textEdit->append("Max_1:"+ QString::number(data[i]));
-            ui->textEdit->append("Min_1:"+ QString::number(data[i+1]));
-            ui->textEdit->append("Max_2:"+ QString::number(data[i+2]));
-            ui->textEdit->append("Min_2:"+ QString::number(data[i+3]));
-            ui->textEdit->append("Max_3:"+ QString::number(data[i+4]));
-            ui->textEdit->append("Min_3:"+ QString::number(data[i+5]));
-            ui->textEdit->append("Max_4:"+ QString::number(data[i+6]));
-            ui->textEdit->append("Min_4:"+ QString::number(data[i+7]));
-            ui->textEdit->append("Max_5:"+ QString::number(data[i+8]));
-            ui->textEdit->append("Min_5:"+ QString::number(data[i+9]));
-            i+=10;
-        }
+
 
        // count =i;
     }
-    ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
+
+  // ui->textEdit->append(QString::number(Dlength));
+   ui->channel_1->setText(QString::number(data[830]));
+   ui->channel_2->setText(QString::number(data[832]));
+   ui->channel_3->setText(QString::number(data[834]));
+   ui->channel_4->setText(QString::number(data[836]));
+   ui->channel_5->setText(QString::number(data[838]));
+   ui->lineEdit_3->setText(QString::number(data[831]));
+   ui->lineEdit_4->setText(QString::number(data[833]));
+   ui->lineEdit_5->setText(QString::number(data[835]));
+   ui->lineEdit_6->setText(QString::number(data[837]));
+   ui->lineEdit_7->setText(QString::number(data[839]));
+
+ //   ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
     QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart);
-    chart_1->axisX()->setMin(statT.addMSecs(-25920));
-    chart_1->axisX()->setMax(statT.addMSecs(-19920));
 
-    chart_2->axisX()->setMin(statT.addMSecs(-20940));
-    chart_2->axisX()->setMax(statT.addMSecs(-14940));
+    if(series_count==0)
+    {
 
-    chart_3->axisX()->setMin(statT.addMSecs(-15960));
-    chart_3->axisX()->setMax(statT.addMSecs(-9960));
 
-    chart_4->axisX()->setMin(statT.addMSecs(-10980));
-    chart_4->axisX()->setMax(statT.addMSecs(-4980));
 
-    chart_5->axisX()->setMin(statT.addMSecs(-6000));
+    chart_1->axisX()->setMin(statT.addMSecs(-24750));
+    chart_1->axisX()->setMax(statT.addMSecs(-19800));
+    chart_1->axisY()->setMax(data[830]);
+    chart_1->axisY()->setMin(data[831]);
+    chart_2->axisX()->setMin(statT.addMSecs(-19800));
+    chart_2->axisX()->setMax(statT.addMSecs(-14850));
+    chart_2->axisY()->setMax(data[832]);
+    chart_2->axisY()->setMin(data[833]);
+    chart_3->axisX()->setMin(statT.addMSecs(-14850));
+    chart_3->axisX()->setMax(statT.addMSecs(-9900));
+    chart_3->axisY()->setMax(data[834]);
+    chart_3->axisY()->setMin(data[835]);
+    chart_4->axisX()->setMin(statT.addMSecs(-9900));
+    chart_4->axisX()->setMax(statT.addMSecs(-4950));
+    chart_4->axisY()->setMax(data[836]);
+    chart_4->axisY()->setMin(data[837]);
+    chart_5->axisX()->setMin(statT.addMSecs(-4950));
     chart_5->axisX()->setMax(statT);
+    chart_5->axisY()->setMax(data[838]);
+    chart_5->axisY()->setMin(data[839]);
+ }
 
+else
+ {
+        if(series_count<13)
+        {
+            chart_1->axisX()->setMax(statT.addMSecs(-19800));
+            chart_1->axisY()->setMax(data[830]);
+            chart_1->axisY()->setMin(data[831]);
+            chart_2->axisX()->setMax(statT.addMSecs(-14850));
+            chart_2->axisY()->setMax(data[832]);
+            chart_2->axisY()->setMin(data[833]);
+            chart_3->axisX()->setMax(statT.addMSecs(-9900));
+            chart_3->axisY()->setMax(data[834]);
+            chart_3->axisY()->setMin(data[835]);
+            chart_4->axisX()->setMax(statT.addMSecs(-4950));
+            chart_4->axisY()->setMax(data[836]);
+            chart_4->axisY()->setMin(data[837]);
+            chart_5->axisX()->setMax(statT);
+            chart_5->axisY()->setMax(data[838]);
+            chart_5->axisY()->setMin(data[839]);
+
+        }
+        else
+        {
+
+            chart_1->axisX()->setMin(statT.addMSecs(-79200));
+            chart_1->axisX()->setMax(statT.addMSecs(-19800));
+            chart_1->axisY()->setMax(data[830]);
+            chart_1->axisY()->setMin(data[831]);
+            chart_2->axisX()->setMin(statT.addMSecs(-74250));
+            chart_2->axisX()->setMax(statT.addMSecs(-14850));
+            chart_2->axisY()->setMax(data[832]);
+            chart_2->axisY()->setMin(data[833]);
+            chart_3->axisX()->setMin(statT.addMSecs(-69300));
+            chart_3->axisX()->setMax(statT.addMSecs(-9900));
+            chart_3->axisY()->setMax(data[834]);
+            chart_3->axisY()->setMin(data[835]);
+            chart_4->axisX()->setMin(statT.addMSecs(-64350));
+            chart_4->axisX()->setMax(statT.addMSecs(-4950));
+            chart_4->axisY()->setMax(data[836]);
+            chart_4->axisY()->setMin(data[837]);
+            chart_5->axisX()->setMin(statT.addMSecs(-59400));
+            chart_5->axisX()->setMax(statT);
+            chart_5->axisY()->setMax(data[838]);
+            chart_5->axisY()->setMin(data[839]);
+
+
+            series_1->removePoints(0,165);
+            series_2->removePoints(0,165);
+            series_3->removePoints(0,165);
+            series_4->removePoints(0,165);
+            series_5->removePoints(0,165);
+
+        }
+
+
+ }
     series_1->show();
     series_2->show();
     series_3->show();
     series_4->show();
     series_5->show();
-    qDebug()<<"END time "<<timestart;
-
+    ui->textEdit->append("SeriesCount:"+QString::number(series_count));
+    series_count+=1;
 
 }
 void MainWindow::searchport()

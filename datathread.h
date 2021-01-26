@@ -22,7 +22,8 @@ public slots:
     void reveivedDataFromM(QByteArray buf);
 private:
 
-QList<float>  MaxMin(float a,float b,float c,int N);
+float  Max(qreal a,float max);
+float  Min(qreal a,float min);
 
 };
 
