@@ -1,6 +1,7 @@
 QT       += core gui
 QT       += serialport
 QT       += charts
+QT       += sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -19,11 +20,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     datathread.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    sqlite.cpp
 
 HEADERS += \
     datathread.h \
-    mainwindow.h
+    mainwindow.h \
+    sqlite.h
 
 FORMS += \
     mainwindow.ui

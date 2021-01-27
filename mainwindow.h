@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
-
 #include<datathread.h>
+#include <sqlite.h>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -20,15 +20,16 @@ public:
 
 private slots:
     void on_SerialButton_clicked();
-
     void on_SelectFileButton_clicked();
-
     void on_FileReadButton_clicked();
     void updataSeries(qint64 time,QList<float> data);
+
 private:
     Ui::MainWindow *ui;
     QSerialPort *serial;
     DataThread  *Dthread  ;
+    Sqlite *sql;
+
     void chart1();
     void chart2();
     void chart3();

@@ -33,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     serial =  new QSerialPort;
     Dthread = new DataThread;
+    sql = new Sqlite;   
+    sql->Dbint(ui);
     chart1();
     chart2();
     chart3();
@@ -59,7 +61,6 @@ void MainWindow::formint()
     pal.setColor(QPalette::Window, Qt::black);
     pal.setColor(QPalette::WindowText, QRgb(0xd6d6d6));
     window()->setPalette(pal);
-
 
 }
 void MainWindow::chart1()
@@ -205,7 +206,6 @@ void MainWindow::chart5()
 {
 
     chart_5 =new QChart;
-
     QChartView *chartView = new QChartView(chart_5);
  //    v.setRubberBand(QChartView::HorizontalRubberBand);
     chartView->setRubberBand(QChartView::RectangleRubberBand);
@@ -236,6 +236,8 @@ void MainWindow::chart5()
     layout->addWidget(chartView);
     chart_5->setTheme(QChart::ChartThemeDark);
 }
+
+
 int series_count=0;
 void MainWindow::updataSeries(qint64 time,QList<float> data)
 {
@@ -499,6 +501,7 @@ void MainWindow::on_SerialButton_clicked()//串口开关
            serial->close();
            ui->SerialButton->setText("Open Port");
            ui->textEdit->append("SerialPort Closed");
+           series_count=0;
         }
 }
 

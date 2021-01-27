@@ -17,6 +17,7 @@ public:
     QString FixString(int);
 signals:
      void senddata2M(qint64 time,QList<float> data);
+
 public slots:
 
     void reveivedDataFromM(QByteArray buf);
