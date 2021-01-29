@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     serial =  new QSerialPort;
     Dthread = new DataThread;
     sql = new Sqlite;   
-    sql->Dbint(ui);
+   // sql->Dbint(ui);
     chart1();
     chart2();
     chart3();
@@ -236,8 +236,6 @@ void MainWindow::chart5()
     layout->addWidget(chartView);
     chart_5->setTheme(QChart::ChartThemeDark);
 }
-
-
 int series_count=0;
 void MainWindow::updataSeries(qint64 time,QList<float> data)
 {
@@ -254,35 +252,39 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
         if(0<i&&i<166)
         {
         series_1->append(timestart, data[i]);
-        //series_1->append(i,data[i]);
+        sql-> Write2Channl_1(timestart, data[i]);
         timestart+=30;    
-        ui->channel_1->setText(QString::number( data[i]));
+
 
         }
 
         else if (166<=i&&i<332)
         {
             series_2->append(timestart, data[i]);
+             sql-> Write2Channl_2(timestart, data[i]);
             timestart+=30;        
-            ui->channel_2->setText(QString::number( data[i]));
+
         }
         else if (332<=i&&i<498)
         {
             series_3->append(timestart, data[i]);
+             sql-> Write2Channl_3(timestart, data[i]);
             timestart+=30;
-            ui->channel_3->setText(QString::number( data[i]));
+
         }
         else if (498<=i&&i<664)
         {
             series_4->append(timestart, data[i]);
+             sql-> Write2Channl_4(timestart, data[i]);
             timestart+=30;
-            ui->channel_4->setText(QString::number( data[i]));
+
         }
         else  if (664<=i&&i<830)
         {
             series_5->append(timestart, data[i]);
+            sql-> Write2Channl_5(timestart, data[i]);
             timestart+=30;
-            ui->channel_5->setText(QString::number( data[i]));
+
         }
 
 
@@ -301,13 +303,11 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
    ui->lineEdit_6->setText(QString::number(data[837]));
    ui->lineEdit_7->setText(QString::number(data[839]));
 
- //   ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
-    QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart);
+  // ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
+    QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart-30);
 
     if(series_count==0)
     {
-
-
 
     chart_1->axisX()->setMin(statT.addMSecs(-24750));
     chart_1->axisX()->setMax(statT.addMSecs(-19800));
@@ -462,21 +462,14 @@ void MainWindow::AnalyzingData(QByteArray buf)
 {
 
       AllData=buf;
-      if(AllData.length()>=5408)
-      {
 
          AllData=AllData.remove(5408,AllData.length()-5408);
          sendData2Thread(AllData);
-        // Dthread->run();
-//         qDebug()<<"final count:"<<AllData.length();
-//         qDebug()<<"final start:"<<QString::number(AllData[0],16);
-//         qDebug()<<"final end:"<<QString::number(AllData[AllData.length()-1],16);
-//        // qDebug()<<"Transbuf2:"<<Transbuf.toHex();
          AllData.clear();
          DataStart=false;
          DataCount=0;
          Transbuf.remove(0,5408);
-    }
+
 
 }
 
@@ -503,28 +496,25 @@ void MainWindow::on_SerialButton_clicked()//串口开关
            ui->textEdit->append("SerialPort Closed");
            series_count=0;
         }
+
 }
 
 void MainWindow::on_SelectFileButton_clicked()//选取文件
 {
-    QString  srcDirPath = QFileDialog::getOpenFileName( this, "open the data file", "/");
+    QString  srcDirPath = QFileDialog::getExistingDirectory( this, "open the data file", "/");
     if (srcDirPath.isEmpty())
     {
         return;
     }
     else
     {
-        ui->lineEdit->setText(srcDirPath) ;
-
+         ui->lineEdit->setText(srcDirPath) ;
+         sql->Dbint(ui);
     }
 }
 int a =0;
-int b=1;
-void MainWindow::on_FileReadButton_clicked()//读取文件数据
-{
+int b =1;
 
-
-}
 void MainWindow::Delay_MSec(unsigned int msec)//-----------------------------------------延时函数
 {
     QTime _Timer = QTime::currentTime().addMSecs(msec);

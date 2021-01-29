@@ -239,7 +239,6 @@ else
 }
 
 };
-
 float DataThread:: Max(qreal a,float max)
 {
 

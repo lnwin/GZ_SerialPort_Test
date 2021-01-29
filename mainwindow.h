@@ -21,7 +21,7 @@ public:
 private slots:
     void on_SerialButton_clicked();
     void on_SelectFileButton_clicked();
-    void on_FileReadButton_clicked();
+
     void updataSeries(qint64 time,QList<float> data);
 
 private:
