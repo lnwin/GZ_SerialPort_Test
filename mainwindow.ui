@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1053</width>
+    <width>1233</width>
     <height>658</height>
    </rect>
   </property>
@@ -18,9 +18,9 @@
     <normaloff>:/new/prefix1/picture/Logo.png</normaloff>:/new/prefix1/picture/Logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
     <item>
-     <layout class="QGridLayout" name="gridLayout_2" rowstretch="1,1,1" columnstretch="1,1">
+     <layout class="QGridLayout" name="gridLayout_2" rowstretch="1,1,1" columnstretch="2,2,1,0">
       <property name="topMargin">
        <number>10</number>
       </property>
@@ -30,119 +30,79 @@
       <property name="bottomMargin">
        <number>10</number>
       </property>
+      <item row="1" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_2"/>
+      </item>
       <item row="0" column="1">
        <layout class="QVBoxLayout" name="verticalLayout_4"/>
       </item>
-      <item row="2" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_3"/>
-      </item>
-      <item row="1" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout_2"/>
+      <item row="0" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout"/>
       </item>
       <item row="1" column="1">
        <layout class="QVBoxLayout" name="verticalLayout_5"/>
       </item>
       <item row="2" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QGroupBox" name="tool">
-          <property name="styleSheet">
-           <string notr="true">QGroupBox
-     {
-            border-color: rgb(7, 7, 7);
-            border-width: 1px;
-            border-style: solid;
-            margin-top: 0.5ex;
-        }</string>
-          </property>
-          <property name="title">
-           <string>SerialPort</string>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-          <layout class="QGridLayout" name="gridLayout">
-           <item row="1" column="0">
-            <widget class="QComboBox" name="portcomboBox">
-             <property name="editable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="SerialButton">
-             <property name="text">
-              <string>Open Port</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1" colspan="2">
-            <widget class="QLineEdit" name="lineEdit">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="3">
-            <widget class="QTextEdit" name="textEdit">
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1" colspan="2">
-            <widget class="QPushButton" name="SelectFileButton">
-             <property name="text">
-              <string>SelectDataBaseFile</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
+       <layout class="QVBoxLayout" name="verticalLayout_9"/>
+      </item>
+      <item row="2" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout_3"/>
+      </item>
+      <item row="2" column="2">
+       <layout class="QGridLayout" name="gridLayout_3" rowstretch="4,1" columnstretch="0,0,0,0" rowminimumheight="0,0">
+        <item row="0" column="1" rowspan="2">
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <property name="topMargin">
            <number>20</number>
           </property>
+          <property name="bottomMargin">
+           <number>9</number>
+          </property>
           <item>
            <widget class="QLabel" name="sds">
             <property name="text">
-             <string>channel_1</string>
+             <string>channel_1_E</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>channel_2</string>
+             <string>channel_2_E</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>channel_3</string>
+             <string>channel_3_E</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>channel_4</string>
+             <string>channel_4_E</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>channel_5</string>
+             <string>channel_5_E</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>channel_6_M</string>
             </property>
            </widget>
           </item>
          </layout>
         </item>
-        <item>
+        <item row="0" column="2" rowspan="2">
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
            <widget class="QLabel" name="label">
@@ -153,7 +113,7 @@
              </size>
             </property>
             <property name="text">
-             <string>       Max</string>
+             <string>  Max</string>
             </property>
            </widget>
           </item>
@@ -192,9 +152,16 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLineEdit" name="channel_6">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
-        <item>
+        <item row="0" column="3" rowspan="2">
          <layout class="QVBoxLayout" name="verticalLayout_16">
           <item>
            <widget class="QLabel" name="label_15">
@@ -205,7 +172,7 @@
              </size>
             </property>
             <property name="text">
-             <string>       Min</string>
+             <string>  Min</string>
             </property>
            </widget>
           </item>
@@ -244,12 +211,86 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLineEdit" name="lineEdit_8">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>
       </item>
-      <item row="0" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout"/>
+      <item row="0" column="2" rowspan="2">
+       <widget class="QGroupBox" name="tool">
+        <property name="styleSheet">
+         <string notr="true">QGroupBox
+     {
+            border-color: rgb(7, 7, 7);
+            border-width: 1px;
+            border-style: solid;
+            margin-top: 0.5ex;
+        }</string>
+        </property>
+        <property name="title">
+         <string>SerialPort</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QComboBox" name="portcomboBox">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="portcomboBox_2">
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="SerialButton_2">
+           <property name="text">
+            <string>Open MPort</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QPushButton" name="SelectFileButton">
+           <property name="text">
+            <string>SelectDataBaseFile</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QPushButton" name="SerialButton">
+           <property name="text">
+            <string>Open EPort</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QTextEdit" name="textEdit">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </item>

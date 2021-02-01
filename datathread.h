@@ -9,6 +9,8 @@ class DataThread:public QThread
     Q_OBJECT
 public:
     DataThread();
+    float  Max(qreal a,float max);
+    float  Min(qreal a,float min);
 
     void DataShow(QByteArray buf,qint64 DataStartTime);
     float Hex3Dec(QString hex);
@@ -23,8 +25,7 @@ public slots:
     void reveivedDataFromM(QByteArray buf);
 private:
 
-float  Max(qreal a,float max);
-float  Min(qreal a,float min);
+
 
 };
 

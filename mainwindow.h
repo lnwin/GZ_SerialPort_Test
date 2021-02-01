@@ -24,9 +24,12 @@ private slots:
 
     void updataSeries(qint64 time,QList<float> data);
 
+    void on_SerialButton_2_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSerialPort *serial;
+    QSerialPort *serial_2;
     DataThread  *Dthread  ;
     Sqlite *sql;
 
@@ -35,10 +38,13 @@ private:
     void chart3();
     void chart4();
     void chart5();
+    void chart6();
     void formint();
     void searchport();
     void ReadData();
+    void ReadData_2();
     void AnalyzingData( QByteArray buf);
+     void AnalyzingData_2( QByteArray buf);
     //void DataShow(QByteArray buf,qint64 datastart);
    // qint64 ChangeDate2Number(QByteArray buf);
  void Delay_MSec(unsigned int );

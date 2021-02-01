@@ -15,16 +15,20 @@ QChart *chart_2;
 QChart *chart_3;
 QChart *chart_4;
 QChart *chart_5;
+QChart *chart_6;
 QLineSeries *series_1;
 QLineSeries *series_2;
 QLineSeries *series_3;
 QLineSeries *series_4;
 QLineSeries *series_5;
+QLineSeries *series_6;
 int maxSize = 5000;
 int MessageHead=0;
 bool DataStart =false;
+bool DataStart_2 =false;
 int DataCount=0;
 int DataStartIndex=0;
+int DataStartIndex_2=0;
 qint64 DataStartTime;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     serial =  new QSerialPort;
+    serial_2 =  new QSerialPort;
     Dthread = new DataThread;
     sql = new Sqlite;   
    // sql->Dbint(ui);
@@ -40,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     chart3();
     chart4();
     chart5();
+    chart6();
     searchport();
     formint();
     connect(this, SIGNAL(sendData2Thread(QByteArray)),Dthread,SLOT(reveivedDataFromM(QByteArray)));
@@ -236,6 +242,41 @@ void MainWindow::chart5()
     layout->addWidget(chartView);
     chart_5->setTheme(QChart::ChartThemeDark);
 }
+void MainWindow::chart6()
+{
+
+    chart_6 =new QChart;
+    QChartView *chartView = new QChartView(chart_6);
+ //    v.setRubberBand(QChartView::HorizontalRubberBand);
+    chartView->setRubberBand(QChartView::RectangleRubberBand);
+ //    chartView->setRubberBand();
+
+    series_6 = new QLineSeries;
+    chart_6->addSeries(series_6);
+
+
+    series_6->setUseOpenGL(true);//openGl 加速
+    qDebug()<<series_6->useOpenGL();
+
+//    QDateTime now  = QDateTime::currentDateTime();
+//    QDateTimeAxis *axisX = new QDateTimeAxis;
+     QValueAxis *axisX = new QValueAxis;
+//    axisX->setFormat("MM-dd-HH:mm:ss");//
+//    //axisX->setLabelsAngle(60);
+    axisX->setRange(0,300);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setRange(-5,5);
+    axisY->setTitleText("nT/Hz");
+
+    chart_6->setAxisX(axisX,series_6);
+    chart_6->setAxisY(axisY,series_6);
+    chart_6->legend()->hide();
+    chart_6->setTitle("DZS_M");
+    QVBoxLayout *layout = ui->verticalLayout_9;
+    layout->addWidget(chartView);
+    chart_6->setTheme(QChart::ChartThemeDark);
+}
 int series_count=0;
 void MainWindow::updataSeries(qint64 time,QList<float> data)
 {
@@ -405,6 +446,7 @@ void MainWindow::searchport()
         if(serial.open(QIODevice::ReadWrite))
         {
             ui->portcomboBox->addItem(serial.portName());
+            ui->portcomboBox_2->addItem(serial.portName());
             serial.close();
 
         }
@@ -457,6 +499,52 @@ void MainWindow::ReadData()
 
     buf.clear();
 }
+QByteArray Transbuf_2;
+int DZS_COUNT;
+void MainWindow::ReadData_2()
+{
+    QByteArray buf;
+    buf = serial_2->readAll();
+    Transbuf_2 += buf;
+    if(!buf.isEmpty())
+ {
+
+
+    if(!DataStart_2)
+    {
+        for (int i=0;i<Transbuf_2.length()-1;i++)
+
+        if((Transbuf_2[i]=='\xAA')&(Transbuf_2[i+1]=='\xAA')&(Transbuf_2[i+2]=='\x55')&(Transbuf_2[i+3]=='\x55'))
+        {
+            DataStart_2=true;
+            DataStartIndex_2=i;
+            Transbuf_2.remove(0,DataStartIndex_2);
+            break;
+
+
+
+     }
+    }
+    else
+    {
+
+        if(Transbuf_2.length()>=48)
+        {
+
+           AnalyzingData_2(Transbuf_2);
+            DZS_COUNT+=1;
+
+        }
+    }
+
+
+ }
+
+
+buf.clear();
+
+
+}
 QByteArray AllData;
 void MainWindow::AnalyzingData(QByteArray buf)
 {
@@ -473,29 +561,68 @@ void MainWindow::AnalyzingData(QByteArray buf)
 
 }
 
+float DZS_Max;
+float DZS_Min;
+bool DZS_first=true;
+void MainWindow::AnalyzingData_2(QByteArray buf)
+{
+       float CX;
+       float FX;
+       float DZS_M;
+       CX = buf.mid(4,2).toHex().toFloat();
+       FX = buf.mid(6,3).toHex().toFloat();
+       DZS_M = (CX+1)*320000000/(FX+1)/3.498577;
+       if(DZS_first)
+       {
+           DZS_Max = DZS_M;
+           DZS_Min = DZS_M;
+           DZS_first=false;
+       }
+       series_2->append(DZS_COUNT,DZS_M);
+       DZS_Max = Dthread->Max(DZS_Max,DZS_M);
+       DZS_Min = Dthread->Min(DZS_Min,DZS_M);
+       ui->channel_6->setText(QString::number( DZS_Max));
+       ui->lineEdit_8->setText(QString::number( DZS_Min));
+       chart_6->axisY()->setMax(DZS_Max);
+       chart_6->axisY()->setMin(DZS_Min);
+
+       if(DZS_COUNT>300)
+       {
+         series_6->remove(0,1);
+         chart_6->axisX()->setMin(DZS_COUNT-300);
+         chart_6->axisX()->setMax(DZS_COUNT);
+       }
+       series_6->show();
+       DataStart_2=false;
+       Transbuf_2.remove(0,48);
+
+
+
+}
+
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
 
-        if(!serial->isOpen())
-        {
-        serial->setPortName(ui->portcomboBox->currentText());//设置串口名
-        serial->open(QIODevice::ReadWrite);//以读写方式打开串口
-        serial->setBaudRate(QSerialPort::Baud115200);//波特率
-        serial->setDataBits(QSerialPort::Data8);//数据位
-        serial->setParity(QSerialPort::NoParity);//校验位
-        serial->setStopBits(QSerialPort::OneStop);//停止位
-        QObject::connect(serial,&QSerialPort::readyRead,this,&MainWindow::ReadData);
-        ui->textEdit->append("SerialPort Opened");
-        ui->SerialButton->setText("Close Port");
+    if(!serial->isOpen())
+    {
+    serial->setPortName(ui->portcomboBox->currentText());//设置串口名
+    serial->open(QIODevice::ReadWrite);//以读写方式打开串口
+    serial->setBaudRate(QSerialPort::Baud115200);//波特率
+    serial->setDataBits(QSerialPort::Data8);//数据位
+    serial->setParity(QSerialPort::NoParity);//校验位
+    serial->setStopBits(QSerialPort::OneStop);//停止位
+    QObject::connect(serial,&QSerialPort::readyRead,this,&MainWindow::ReadData);
+    ui->textEdit->append("SerialPort Opened");
+    ui->SerialButton->setText("Close Port");
 
-        }
-        else
-        {
-           serial->close();
-           ui->SerialButton->setText("Open Port");
-           ui->textEdit->append("SerialPort Closed");
-           series_count=0;
-        }
+    }
+    else
+    {
+       serial->close();
+       ui->SerialButton->setText("Open Port");
+       ui->textEdit->append("SerialPort Closed");
+       series_count=0;
+    }
 
 }
 
@@ -522,4 +649,32 @@ void MainWindow::Delay_MSec(unsigned int msec)//--------------------------------
     while( QTime::currentTime() < _Timer )
 
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
+void MainWindow::on_SerialButton_2_clicked()//电子所设备串口
+{
+
+
+
+    if(!serial_2->isOpen())
+    {
+    serial_2->setPortName(ui->portcomboBox_2->currentText());//设置串口名
+    serial_2->open(QIODevice::ReadWrite);//以读写方式打开串口
+    serial_2->setBaudRate(QSerialPort::Baud115200);//波特率
+    serial_2->setDataBits(QSerialPort::Data8);//数据位
+    serial_2->setParity(QSerialPort::NoParity);//校验位
+    serial_2->setStopBits(QSerialPort::OneStop);//停止位
+    QObject::connect(serial_2,&QSerialPort::readyRead,this,&MainWindow::ReadData_2);
+    ui->textEdit->append("SerialPort_2 Opened");
+    ui->SerialButton_2->setText("Close Port");
+
+    }
+    else
+    {
+       serial_2->close();
+       ui->SerialButton_2->setText("Open Port");
+       ui->textEdit->append("SerialPort Closed");
+
+    }
+
 }
