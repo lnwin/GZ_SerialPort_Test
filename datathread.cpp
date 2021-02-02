@@ -40,12 +40,12 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
              currentdata.append(y);
              Max_1 = Max(y,Max_1);
              Min_1 = Min(y,Min_1);
-             DataStartTime+=30;
+           //  DataStartTime+=31.25;
              y =  Hex3Dec(buf.mid(count+5,3).toHex());
              currentdata.append(y);
              Max_1 = Max(y,Max_1);
              Min_1 = Min(y,Min_1);
-             DataStartTime+=30;
+         //    DataStartTime+=31.25;
              break;
 
         case 2:
@@ -60,12 +60,12 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
             currentdata.append(y);
             Max_2 = Max(y,Max_2);
             Min_2 = Min(y,Min_2);
-            DataStartTime+=30;
+          //  DataStartTime+=31.25;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
             Max_2 = Max(y,Max_2);
             Min_2 = Min(y,Min_2);
-            DataStartTime+=30;//
+          //  DataStartTime+=31.25;//
             break;
 
         case 3:
@@ -79,12 +79,12 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
             currentdata.append(y);
             Max_3 = Max(y,Max_3);
             Min_3 = Min(y,Min_3);
-            DataStartTime+=30;
+         //   DataStartTime+=31.25;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
             Max_3 = Max(y,Max_3);
             Min_3 = Min(y,Min_3);
-            DataStartTime+=30;//
+          //  DataStartTime+=31.25;//
             break;
 
         case 4:
@@ -98,12 +98,12 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
             currentdata.append(y);
             Max_4 = Max(y,Max_4);
             Min_4 = Min(y,Min_4);
-            DataStartTime+=30;
+          //  DataStartTime+=31.25;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
             Max_4 = Max(y,Max_4);
             Min_4 = Min(y,Min_4);
-            DataStartTime+=30;
+           // DataStartTime+=31.25;
             break;
 
         case 5:
@@ -117,15 +117,15 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
             currentdata.append(y);
             Max_5 = Max(y,Max_5);
             Min_5 = Min(y,Min_5);
-            DataStartTime+=30;
+        //    DataStartTime+=31.25;
             y =  Hex3Dec(buf.mid(count+5,3).toHex());
             currentdata.append(y);
             Max_5 = Max(y,Max_5);
             Min_5 = Min(y,Min_5);
-            DataStartTime+=30;
+          //  DataStartTime+=31.25;
             if(currentdata.length()>829)
             {
-               qDebug()<<"SENFDATA2m:"<<DataStartTime ;             
+               qDebug()<<"Send2m:"<<DataStartTime ;
                currentdata.append(Max_1);
                 currentdata.append(Min_1);
                  currentdata.append(Max_2);
@@ -195,7 +195,7 @@ void DataThread::reveivedDataFromM(QByteArray buf)
     ThreadDst =ChangeDate2Number(buf);
     qDebug()<<"received:"<<buf.length();
     qDebug()<<"received time:"<<ThreadDst;
-   run();
+    run();
 
 }
 qint64 DataThread:: ChangeDate2Number(QByteArray buf)
