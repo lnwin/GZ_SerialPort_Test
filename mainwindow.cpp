@@ -302,7 +302,7 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
         else if (166<=i&&i<332)
         {
             series_2->append(timestart, data[i]);
-             sql-> Write2Channl_2(timestart, data[i]);
+           sql-> Write2Channl_2(timestart, data[i]);
             timestart+=30;        
 
         }
@@ -500,12 +500,13 @@ void MainWindow::ReadData()
     buf.clear();
 }
 QByteArray Transbuf_2;
-int DZS_COUNT;
+qreal DZS_COUNT;
 void MainWindow::ReadData_2()
 {
     QByteArray buf;
     buf = serial_2->readAll();
     Transbuf_2 += buf;
+    ui->textEdit->append("buf length:"+ QString::number( Transbuf_2.length()));
     if(!buf.isEmpty())
  {
 
@@ -518,7 +519,10 @@ void MainWindow::ReadData_2()
         {
             DataStart_2=true;
             DataStartIndex_2=i;
+           // ui->textEdit->append("Start:"+ QString::number(DataStartIndex_2));
+
             Transbuf_2.remove(0,DataStartIndex_2);
+
             break;
 
 
@@ -530,9 +534,12 @@ void MainWindow::ReadData_2()
 
         if(Transbuf_2.length()>=48)
         {
+         // ui->textEdit->append(Transbuf_2.toHex());
+          AnalyzingData_2(Transbuf_2);
 
-           AnalyzingData_2(Transbuf_2);
             DZS_COUNT+=1;
+          //  ui->textEdit->append("begin Analyzing"+QString::number(DZS_COUNT));
+
 
         }
     }
@@ -560,31 +567,40 @@ void MainWindow::AnalyzingData(QByteArray buf)
 
 
 }
-
 float DZS_Max;
 float DZS_Min;
 bool DZS_first=true;
 void MainWindow::AnalyzingData_2(QByteArray buf)
 {
+    bool ok;
        float CX;
        float FX;
        float DZS_M;
-       CX = buf.mid(4,2).toHex().toFloat();
-       FX = buf.mid(6,3).toHex().toFloat();
+       CX = buf.mid(5,2).toHex().toInt(&ok,16);
+       FX = buf.mid(7,3).toHex().toInt(&ok,16);
+
+     // qDebug()<<"CX:"<<buf.mid(5,2).toHex()<<"=="<<CX;
+    //  qDebug()<<"FX:"<<buf.mid(7,3).toHex()<<"=="<<FX;
+
        DZS_M = (CX+1)*320000000/(FX+1)/3.498577;
+
+    //   qDebug()<<"DATA:"<< QString::number( DZS_M);
        if(DZS_first)
        {
            DZS_Max = DZS_M;
            DZS_Min = DZS_M;
            DZS_first=false;
        }
-       series_2->append(DZS_COUNT,DZS_M);
+       series_6->append(DZS_COUNT,DZS_M);
+        sql->Write2Channl_6(DZS_COUNT, DZS_M);
+     //  ui->textEdit->append(QString::number( DZS_COUNT));
+     //  ui->textEdit->append(QString::number( DZS_M));
        DZS_Max = Dthread->Max(DZS_Max,DZS_M);
        DZS_Min = Dthread->Min(DZS_Min,DZS_M);
        ui->channel_6->setText(QString::number( DZS_Max));
        ui->lineEdit_8->setText(QString::number( DZS_Min));
-       chart_6->axisY()->setMax(DZS_Max);
-       chart_6->axisY()->setMin(DZS_Min);
+       chart_6->axisY()->setMax(DZS_Max+50);
+       chart_6->axisY()->setMin(DZS_Min-50);
 
        if(DZS_COUNT>300)
        {
@@ -594,7 +610,7 @@ void MainWindow::AnalyzingData_2(QByteArray buf)
        }
        series_6->show();
        DataStart_2=false;
-       Transbuf_2.remove(0,48);
+       Transbuf_2.clear();
 
 
 
@@ -673,7 +689,7 @@ void MainWindow::on_SerialButton_2_clicked()//电子所设备串口
     {
        serial_2->close();
        ui->SerialButton_2->setText("Open Port");
-       ui->textEdit->append("SerialPort Closed");
+       ui->textEdit->append("SerialPort_2 Closed");
 
     }
 

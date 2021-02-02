@@ -54,6 +54,9 @@ void Sqlite::Dbint(Ui::MainWindow *u)
          sql = "create table DCDATA_5(time text,value float)";
          //创建表是否成功
          query.exec(sql);
+           sql = "create table DZS_6(number text,value float)";
+         //创建表是否成功
+           query.exec(sql);
 
 
 ////-------------------------------------------------------------show
@@ -139,6 +142,14 @@ void Sqlite::Write2Channl_5(qint64 time,float data)
     QString Dtime = QDateTime::fromMSecsSinceEpoch(time).toString("yy-MM-dd-hh hh:mm:ss.zzz");
     QString Data = QString::number(data);
     query.exec(QString("insert into DCDATA_5 values('%1','%2')").arg(Dtime).arg(Data));
+    //---------------------写入数据
+}
+void Sqlite::Write2Channl_6(float number,float data)
+{
+    QSqlQuery query(db);
+    QString DNUMB = QString::number(number);
+    QString Data = QString::number(data);
+    query.exec(QString("insert into DZS_6 values('%1','%2')").arg(DNUMB).arg(Data));
     //---------------------写入数据
 }
 

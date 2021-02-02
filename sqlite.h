@@ -25,6 +25,7 @@ public:
     void Write2Channl_3(qint64,float);
     void Write2Channl_4(qint64,float);
     void Write2Channl_5(qint64,float);
+    void Write2Channl_6(float,float);
 signals:
 
 
