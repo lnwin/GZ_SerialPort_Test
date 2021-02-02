@@ -278,13 +278,14 @@ void MainWindow::chart6()
     chart_6->setTheme(QChart::ChartThemeDark);
 }
 int series_count=0;
+qint64 timestart;
+ qint64 timestart_1;
+  qint64 timestart_2;
+   qint64 timestart_3;
+    qint64 timestart_4;
 void MainWindow::updataSeries(qint64 time,QList<float> data)
 {
-    qint64 timestart;
-     qint64 timestart_1;
-      qint64 timestart_2;
-       qint64 timestart_3;
-        qint64 timestart_4;
+
 
     timestart = time;
     timestart_1 = time;
@@ -301,7 +302,7 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
         if(0<i&&i<166)
         {
         series_1->append(timestart, data[i]);
-        sql-> Write2Channl_1(timestart, data[i]);
+       // sql-> Write2Channl_1(timestart, data[i]);
         timestart+=32;
 
 
@@ -310,28 +311,28 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
         else if (166<=i&&i<332)
         {
             series_2->append(timestart_1, data[i]);
-           sql-> Write2Channl_2(timestart, data[i]);
+         //  sql-> Write2Channl_2(timestart, data[i]);
            timestart_1+=32;
 
         }
         else if (332<=i&&i<498)
         {
             series_3->append(timestart_2, data[i]);
-             sql-> Write2Channl_3(timestart, data[i]);
+          //   sql-> Write2Channl_3(timestart, data[i]);
             timestart_2+=32;
 
         }
         else if (498<=i&&i<664)
         {
             series_4->append(timestart_3, data[i]);
-             sql-> Write2Channl_4(timestart, data[i]);
+           //  sql-> Write2Channl_4(timestart, data[i]);
              timestart_3+=32;
 
         }
         else  if (664<=i&&i<830)
         {
             series_5->append(timestart_4, data[i]);
-            sql-> Write2Channl_5(timestart, data[i]);
+           // sql-> Write2Channl_5(timestart, data[i]);
             timestart_4+=32;
 
 
@@ -340,7 +341,7 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
 
 
     }
-    timestart+=32;
+    timestart-=32;
     qDebug()<<"final time:"<<timestart;
   // ui->textEdit->append(QString::number(Dlength));
    ui->channel_1->setText(QString::number(data[830]));
@@ -537,7 +538,7 @@ void MainWindow::ReadData_2()
     QByteArray buf;
     buf = serial_2->readAll();
     Transbuf_2 += buf;
-    ui->textEdit->append("buf length:"+ QString::number( Transbuf_2.length()));
+  //  ui->textEdit->append("buf length:"+ QString::number( Transbuf_2.length()));
     if(!buf.isEmpty())
  {
 
@@ -567,9 +568,8 @@ void MainWindow::ReadData_2()
         {
          // ui->textEdit->append(Transbuf_2.toHex());
           AnalyzingData_2(Transbuf_2);
-
-            DZS_COUNT+=1;
-          //  ui->textEdit->append("begin Analyzing"+QString::number(DZS_COUNT));
+          DZS_COUNT+=1;
+          //ui->textEdit->append("begin Analyzing"+QString::number(DZS_COUNT));
 
 
         }
@@ -622,7 +622,7 @@ void MainWindow::AnalyzingData_2(QByteArray buf)
            DZS_first=false;
        }
        series_6->append(DZS_COUNT,DZS_M);
-        sql->Write2Channl_6(DZS_COUNT, DZS_M);
+      //  sql->Write2Channl_6(DZS_COUNT, DZS_M);
      //  ui->textEdit->append(QString::number( DZS_COUNT));
      //  ui->textEdit->append(QString::number( DZS_M));
        DZS_Max = Dthread->Max(DZS_Max,DZS_M);
