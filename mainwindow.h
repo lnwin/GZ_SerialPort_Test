@@ -32,7 +32,7 @@ private:
     QSerialPort *serial_2;
     DataThread  *Dthread  ;
     Sqlite *sql;
-
+    void write2dqlite(QList<float>,qint64 Dtime);
     void chart1();
     void chart2();
     void chart3();

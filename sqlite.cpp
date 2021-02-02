@@ -1,6 +1,6 @@
 ﻿#include "sqlite.h"
 QSqlQueryModel *model = new QSqlQueryModel;
- QSqlDatabase db;
+QSqlDatabase db;
 Sqlite::Sqlite(QObject *parent) : QObject(parent)
 {
  // Dbint(Ui::MainWindow *u);
@@ -12,9 +12,7 @@ typedef struct _testInfo //假定数据库存储内容
     QString Time;
     QString Value;
 
-
 }testInfo;
-
 
 void Sqlite::Dbint(Ui::MainWindow *u)
 {
@@ -99,9 +97,6 @@ void Sqlite::Dbint(Ui::MainWindow *u)
 
 
 }
-
-
-
 void Sqlite::Write2Channl_1(qint64 time,float data)
 {
   QSqlQuery query(db);

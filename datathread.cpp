@@ -151,7 +151,7 @@ void DataThread::DataShow( QByteArray buf,qint64 DataStartTime)
 
 }
 
-float DataThread:: Hex3Dec(QString hex)
+float DataThread::Hex3Dec(QString hex)
 {
       bool ok;
       float finaldata;
@@ -198,7 +198,7 @@ void DataThread::reveivedDataFromM(QByteArray buf)
     run();
 
 }
-qint64 DataThread:: ChangeDate2Number(QByteArray buf)
+qint64 DataThread::ChangeDate2Number(QByteArray buf)
 {
     bool ok;
     QList<int>datetime;
@@ -239,7 +239,7 @@ else
 }
 
 };
-float DataThread:: Max(qreal a,float max)
+float DataThread::Max(qreal a,float max)
 {
 
     if(a>max)
@@ -250,7 +250,7 @@ float DataThread:: Max(qreal a,float max)
    return max;
 
 }
-float DataThread:: Min(qreal a,float min)
+float DataThread::Min(qreal a,float min)
 {
 
     if(a<min)

@@ -30,6 +30,7 @@ int DataCount=0;
 int DataStartIndex=0;
 int DataStartIndex_2=0;
 qint64 DataStartTime;
+QList<float>datalist;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -279,81 +280,76 @@ void MainWindow::chart6()
 }
 int series_count=0;
 qint64 timestart;
- qint64 timestart_1;
-  qint64 timestart_2;
-   qint64 timestart_3;
-    qint64 timestart_4;
-void MainWindow::updataSeries(qint64 time,QList<float> data)
+qint64 timestart_1;
+qint64 timestart_2;
+qint64 timestart_3;
+qint64 timestart_4;
+void MainWindow::updataSeries(qint64 Dtime,QList<float> datalist)
 {
 
 
-    timestart = time;
-    timestart_1 = time;
-     timestart_2 = time;
-      timestart_3 = time;
-       timestart_4 = time;
-    int Dlength = data.length();
+    timestart = Dtime;
+    timestart_1 = Dtime;
+    timestart_2 = Dtime;
+    timestart_3 = Dtime;
+    timestart_4 = Dtime;
+    int Dlength = datalist.length();
     //int count=0;
-
-  //  ui->textEdit->append( "Data Starttime:"+QString::number(timestart));
+    //ui->textEdit->append( "Data Starttime:"+QString::number(timestart));
     for (int i = 0; i<Dlength; i++ )
 
     {
-        if(0<i&&i<166)
+        if(i<166)
         {
-        series_1->append(timestart, data[i]);
+        series_1->append(timestart, datalist[i]);
        // sql-> Write2Channl_1(timestart, data[i]);
         timestart+=32;
-
 
         }
 
         else if (166<=i&&i<332)
         {
-            series_2->append(timestart_1, data[i]);
+            series_2->append(timestart_1, datalist[i]);
          //  sql-> Write2Channl_2(timestart, data[i]);
            timestart_1+=32;
 
         }
         else if (332<=i&&i<498)
         {
-            series_3->append(timestart_2, data[i]);
+            series_3->append(timestart_2, datalist[i]);
           //   sql-> Write2Channl_3(timestart, data[i]);
             timestart_2+=32;
 
         }
         else if (498<=i&&i<664)
         {
-            series_4->append(timestart_3, data[i]);
+            series_4->append(timestart_3, datalist[i]);
            //  sql-> Write2Channl_4(timestart, data[i]);
              timestart_3+=32;
 
         }
         else  if (664<=i&&i<830)
         {
-            series_5->append(timestart_4, data[i]);
+            series_5->append(timestart_4, datalist[i]);
            // sql-> Write2Channl_5(timestart, data[i]);
             timestart_4+=32;
 
-
         }
-
-
 
     }
     timestart-=32;
     qDebug()<<"final time:"<<timestart;
   // ui->textEdit->append(QString::number(Dlength));
-   ui->channel_1->setText(QString::number(data[830]));
-   ui->channel_2->setText(QString::number(data[832]));
-   ui->channel_3->setText(QString::number(data[834]));
-   ui->channel_4->setText(QString::number(data[836]));
-   ui->channel_5->setText(QString::number(data[838]));
-   ui->lineEdit_3->setText(QString::number(data[831]));
-   ui->lineEdit_4->setText(QString::number(data[833]));
-   ui->lineEdit_5->setText(QString::number(data[835]));
-   ui->lineEdit_6->setText(QString::number(data[837]));
-   ui->lineEdit_7->setText(QString::number(data[839]));
+   ui->channel_1->setText(QString::number(datalist[830]));
+   ui->channel_2->setText(QString::number(datalist[832]));
+   ui->channel_3->setText(QString::number(datalist[834]));
+   ui->channel_4->setText(QString::number(datalist[836]));
+   ui->channel_5->setText(QString::number(datalist[838]));
+   ui->lineEdit_3->setText(QString::number(datalist[831]));
+   ui->lineEdit_4->setText(QString::number(datalist[833]));
+   ui->lineEdit_5->setText(QString::number(datalist[835]));
+   ui->lineEdit_6->setText(QString::number(datalist[837]));
+   ui->lineEdit_7->setText(QString::number(datalist[839]));
 
   // ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
     QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart);
@@ -365,55 +361,55 @@ void MainWindow::updataSeries(qint64 time,QList<float> data)
 //    chart_1->axisX()->setMax(statT.addMSecs(-19800));
     chart_1->axisX()->setMin(statT.addMSecs(-5280));
     chart_1->axisX()->setMax(statT);
-    chart_1->axisY()->setMax(data[830]);
-    chart_1->axisY()->setMin(data[831]);
+    chart_1->axisY()->setMax(datalist[830]);
+    chart_1->axisY()->setMin(datalist[831]);
 //    chart_2->axisX()->setMin(statT.addMSecs(-19800));
 //    chart_2->axisX()->setMax(statT.addMSecs(-14850));
     chart_2->axisX()->setMin(statT.addMSecs(-5280));
      chart_2->axisX()->setMax(statT);
-    chart_2->axisY()->setMax(data[832]);
-    chart_2->axisY()->setMin(data[833]);
+    chart_2->axisY()->setMax(datalist[832]);
+    chart_2->axisY()->setMin(datalist[833]);
 //    chart_3->axisX()->setMin(statT.addMSecs(-14850));
 //    chart_3->axisX()->setMax(statT.addMSecs(-9900));
     chart_3->axisX()->setMin(statT.addMSecs(-5280));
      chart_3->axisX()->setMax(statT);
-    chart_3->axisY()->setMax(data[834]);
-    chart_3->axisY()->setMin(data[835]);
+    chart_3->axisY()->setMax(datalist[834]);
+    chart_3->axisY()->setMin(datalist[835]);
     //chart_4->axisX()->setMin(statT.addMSecs(-9900));
    // chart_4->axisX()->setMax(statT.addMSecs(-4950));
     chart_4->axisX()->setMin(statT.addMSecs(-5280));
      chart_4->axisX()->setMax(statT);
-    chart_4->axisY()->setMax(data[836]);
-    chart_4->axisY()->setMin(data[837]);
+    chart_4->axisY()->setMax(datalist[836]);
+    chart_4->axisY()->setMin(datalist[837]);
     chart_5->axisX()->setMin(statT.addMSecs(-5280));
     chart_5->axisX()->setMax(statT);
-    chart_5->axisY()->setMax(data[838]);
-    chart_5->axisY()->setMin(data[839]);
+    chart_5->axisY()->setMax(datalist[838]);
+    chart_5->axisY()->setMin(datalist[839]);
  }
 
 else
  {
-        if(series_count<13)
+        if(series_count<=13)
         {
 //            chart_1->axisX()->setMax(statT.addMSecs(-19800));
             chart_1->axisX()->setMax(statT);
-            chart_1->axisY()->setMax(data[830]);
-            chart_1->axisY()->setMin(data[831]);
+            chart_1->axisY()->setMax(datalist[830]);
+            chart_1->axisY()->setMin(datalist[831]);
            // chart_2->axisX()->setMax(statT.addMSecs(-14850));
             chart_2->axisX()->setMax(statT);
-            chart_2->axisY()->setMax(data[832]);
-            chart_2->axisY()->setMin(data[833]);
+            chart_2->axisY()->setMax(datalist[832]);
+            chart_2->axisY()->setMin(datalist[833]);
            // chart_3->axisX()->setMax(statT.addMSecs(-9900));
             chart_3->axisX()->setMax(statT);
-            chart_3->axisY()->setMax(data[834]);
-            chart_3->axisY()->setMin(data[835]);
+            chart_3->axisY()->setMax(datalist[834]);
+            chart_3->axisY()->setMin(datalist[835]);
           //  chart_4->axisX()->setMax(statT.addMSecs(-4950));
             chart_4->axisX()->setMax(statT);
-            chart_4->axisY()->setMax(data[836]);
-            chart_4->axisY()->setMin(data[837]);
+            chart_4->axisY()->setMax(datalist[836]);
+            chart_4->axisY()->setMin(datalist[837]);
             chart_5->axisX()->setMax(statT);
-            chart_5->axisY()->setMax(data[838]);
-            chart_5->axisY()->setMin(data[839]);
+            chart_5->axisY()->setMax(datalist[838]);
+            chart_5->axisY()->setMin(datalist[839]);
 
         }
         else
@@ -423,41 +419,38 @@ else
 //            chart_1->axisX()->setMax(statT.addMSecs(-19800));
             chart_1->axisX()->setMin(statT.addMSecs(-68640));
             chart_1->axisX()->setMax(statT);
-            chart_1->axisY()->setMax(data[830]);
-            chart_1->axisY()->setMin(data[831]);
+            chart_1->axisY()->setMax(datalist[830]);
+            chart_1->axisY()->setMin(datalist[831]);
 //            chart_2->axisX()->setMin(statT.addMSecs(-74250));
 //            chart_2->axisX()->setMax(statT.addMSecs(-14850));
             chart_2->axisX()->setMin(statT.addMSecs(-68640));
             chart_2->axisX()->setMax(statT);
-            chart_2->axisY()->setMax(data[832]);
-            chart_2->axisY()->setMin(data[833]);
+            chart_2->axisY()->setMax(datalist[832]);
+            chart_2->axisY()->setMin(datalist[833]);
 //            chart_3->axisX()->setMin(statT.addMSecs(-69300));
 //            chart_3->axisX()->setMax(statT.addMSecs(-9900));
             chart_3->axisX()->setMin(statT.addMSecs(-68640));
             chart_3->axisX()->setMax(statT);
-            chart_3->axisY()->setMax(data[834]);
-            chart_3->axisY()->setMin(data[835]);
+            chart_3->axisY()->setMax(datalist[834]);
+            chart_3->axisY()->setMin(datalist[835]);
 //            chart_4->axisX()->setMin(statT.addMSecs(-64350));
 //            chart_4->axisX()->setMax(statT.addMSecs(-4950));
             chart_4->axisX()->setMin(statT.addMSecs(-68640));
             chart_4->axisX()->setMax(statT);
-            chart_4->axisY()->setMax(data[836]);
-            chart_4->axisY()->setMin(data[837]);
+            chart_4->axisY()->setMax(datalist[836]);
+            chart_4->axisY()->setMin(datalist[837]);
 
             chart_5->axisX()->setMin(statT.addMSecs(-68640));
             chart_5->axisX()->setMax(statT);
-            chart_5->axisY()->setMax(data[838]);
-            chart_5->axisY()->setMin(data[839]);
-
-
-            series_1->removePoints(0,165);
-            series_2->removePoints(0,165);
-            series_3->removePoints(0,165);
-            series_4->removePoints(0,165);
-            series_5->removePoints(0,165);
+            chart_5->axisY()->setMax(datalist[838]);
+            chart_5->axisY()->setMin(datalist[839]);
+            series_1->removePoints(0,166);
+            series_2->removePoints(0,166);
+            series_3->removePoints(0,166);
+            series_4->removePoints(0,166);
+            series_5->removePoints(0,166);
 
         }
-
 
  }
     series_1->show();
@@ -466,6 +459,8 @@ else
     series_4->show();
     series_5->show();
     ui->textEdit->append("SeriesCount:"+QString::number(series_count));
+   // write2dqlite(datalist,Dtime);
+  //  ui->textEdit->append("Write2Sqlite success");
     series_count+=1;
 
 }
@@ -499,13 +494,22 @@ void MainWindow::ReadData()
        {
            for (int i=0;i<Transbuf.length()-1;i++)
 
-           if((Transbuf[i]=='\x88')&(Transbuf[i+5]=='\x01')&(Transbuf[i+6]=='\x01'))
+           if((Transbuf[i]=='\x88')&(Transbuf[i+1]=='\x04')&(Transbuf[i+2]=='\x04')&(Transbuf[i+5]=='\x01')&(Transbuf[i+6]=='\x01'))
            {
-               DataStart=true;
+
                DataStartIndex=i;
-//               qDebug()<<"Transbuf1:"<<Transbuf.toHex();
-               Transbuf.remove(0,DataStartIndex-13);
-              // AnalyzingData(Transbuf);
+//             qDebug()<<"Transbuf1:"<<Transbuf.toHex();
+               if(DataStartIndex<13)
+               {
+                 Transbuf.clear();
+
+               }
+               else
+               {
+                  Transbuf.remove(0,DataStartIndex-13);
+                  DataStart=true;
+               }
+               //AnalyzingData(Transbuf);
 //               qDebug()<<"FirstLenght"<<Transbuf.length();
 //               qDebug()<<"Datastart:"<<DataStartIndex;
 
@@ -587,10 +591,9 @@ QByteArray AllData;
 void MainWindow::AnalyzingData(QByteArray buf)
 {
 
-         AllData=buf;
-         AllData=AllData.remove(5408,AllData.length()-5408);
-         sendData2Thread(AllData);
-         AllData.clear();
+
+         buf.remove(5408,buf.length()-5408);
+         sendData2Thread(buf);
          DataStart=false;
          DataCount=0;
          Transbuf.remove(0,5408);
@@ -645,7 +648,6 @@ void MainWindow::AnalyzingData_2(QByteArray buf)
 
 
 }
-
 void MainWindow::on_SerialButton_clicked()//串口开关
 {
 
@@ -671,7 +673,6 @@ void MainWindow::on_SerialButton_clicked()//串口开关
     }
 
 }
-
 void MainWindow::on_SelectFileButton_clicked()//选取文件
 {
     QString  srcDirPath = QFileDialog::getExistingDirectory( this, "open the data file", "/");
@@ -687,7 +688,6 @@ void MainWindow::on_SelectFileButton_clicked()//选取文件
 }
 int a =0;
 int b =1;
-
 void MainWindow::Delay_MSec(unsigned int msec)//-----------------------------------------延时函数
 {
     QTime _Timer = QTime::currentTime().addMSecs(msec);
@@ -696,7 +696,6 @@ void MainWindow::Delay_MSec(unsigned int msec)//--------------------------------
 
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
-
 void MainWindow::on_SerialButton_2_clicked()//电子所设备串口
 {
 
@@ -720,6 +719,56 @@ void MainWindow::on_SerialButton_2_clicked()//电子所设备串口
        serial_2->close();
        ui->SerialButton_2->setText("Open MPort");
        ui->textEdit->append("SerialPort_2 Closed");
+
+    }
+
+}
+void MainWindow:: write2dqlite(QList<float>Datalist,qint64 DDtime)
+{
+    timestart = DDtime;
+    timestart_1 = DDtime;
+    timestart_2 = DDtime;
+    timestart_3 = DDtime;
+    timestart_4 = DDtime;
+
+    for (int i = 0; i<Datalist.length(); i++ )
+
+    {
+        if(i<166)
+        {
+         sql-> Write2Channl_1(timestart, Datalist[i]);
+         timestart+=32;
+
+        }
+
+        else if (166<=i&&i<332)
+        {
+
+         sql-> Write2Channl_2(timestart_1, Datalist[i]);
+         timestart_1+=32;
+
+        }
+        else if (332<=i&&i<498)
+        {
+        sql-> Write2Channl_3(timestart_2, Datalist[i]);
+        timestart_2+=32;
+
+        }
+        else if (498<=i&&i<664)
+        {
+          sql-> Write2Channl_4(timestart_3, Datalist[i]);
+          timestart_3+=32;
+
+
+        }
+        else  if (664<=i&&i<=830)
+        {
+          sql-> Write2Channl_5(timestart_4, Datalist[i]);
+          timestart_4+=32;
+
+        }
+
+
 
     }
 
