@@ -350,10 +350,8 @@ void MainWindow::updataSeries(qint64 Dtime,QList<float> datalist)
    ui->lineEdit_5->setText(QString::number(datalist[835]));
    ui->lineEdit_6->setText(QString::number(datalist[837]));
    ui->lineEdit_7->setText(QString::number(datalist[839]));
-
   // ui->textEdit->append( "Data Endtime:"+QString::number(timestart));
     QDateTime statT =QDateTime::fromMSecsSinceEpoch(timestart);
-
     if(series_count==0)
     {
 
